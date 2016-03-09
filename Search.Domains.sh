@@ -21,5 +21,5 @@ echo $SERVICE_NAME
 if [[ ${SERVICE_NAME} =~ ' is not ' ]] || [[ ${SERVICE_NAME} == '' ]]; then
     echo "Not a Valid Service Name"
 else
-    /usr/sbin/networksetup -setsearchdomains "$SERVICE_NAME" dt.inc dealerdotcom.corp dealer.ddc dealertrack.com hq.dt.inc int.dealer.com canada.dt.inc dds.dt.inc rv.dt.inc slc.dt.inc sap.dt.inc cmgeneral.local clickmotive.hosting
+    /usr/sbin/networksetup -setsearchdomains "$SERVICE_NAME" SEARCH_DOMAINS
 fi
