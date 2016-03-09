@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dsconfigad -force -remove -u svc_dtcasper -p J0inP@ssWrd
+dsconfigad -force -remove -u UNAME -p PASSWORD
 
 echo "Computer has been unjoined"
 
