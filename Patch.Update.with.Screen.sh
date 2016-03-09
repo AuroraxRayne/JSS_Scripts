@@ -2,18 +2,20 @@
 
 LoggedInUser=`ls -l /dev/console | cut -d " " -f4`
 
-if [ -d /Library/Application\ Support/DT ]; then
+#Check for FOLDER if not create and chmod (create your own place holder)
+if [ -d /Library/Application\ Support/FOLDER ]; then
     echo "Directory already exist"
 else
     echo "Lets make the directory"
-    mkdir /Library/Application\ Support/DT && chmod 777 /Library/Application\ Support/DT
+    mkdir /Library/Application\ Support/FOLDER && chmod 777 /Library/Application\ Support/FOLDER
 fi
 
+# Set check File in $4 variable
 if [[ "$4" != "" ]]; then
 check="$4"
 fi
 # Have we run this already?
-if [ -f /Library/Application\ Support/DT/.$check ]; then
+if [ -f /Library/Application\ Support/FOLDER/.$check ]; then
     echo "Patches already ran"
     exit 2
 fi
@@ -46,29 +48,27 @@ fRunUpdates ()
     /usr/local/jamf/bin/jamf policy -trigger killapple
     ## Run the update policy
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger installAdobeFlashPlayer
+    /usr/local/jamf/bin/jamf policy -trigger App1
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    #/usr/local/jamf/bin/jamf policy -trigger installFireFox
+    /usr/local/jamf/bin/jamf policy -trigger App2
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger installADPassMon
+    /usr/local/jamf/bin/jamf policy -trigger App3
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger installGoogleChrome
+    /usr/local/jamf/bin/jamf policy -trigger App4
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger "installGoogle Drive"
+    /usr/local/jamf/bin/jamf policy -trigger App5
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger installHipChat
+    /usr/local/jamf/bin/jamf policy -trigger App6
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger installOffice2011Update
+    /usr/local/jamf/bin/jamf policy -trigger App7
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger "installMicrosoft Lync"
+    /usr/local/jamf/bin/jamf policy -trigger App8
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger installOracleJava8
+    /usr/local/jamf/bin/jamf policy -trigger App9
     echo `date +"%Y-%m-%d %H:%M:%S"`
-   # /usr/local/jamf/bin/jamf policy -trigger installSilverlight
-    #echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger "2016cacheinstall"
+    /usr/local/jamf/bin/jamf policy -trigger App10
     echo `date +"%Y-%m-%d %H:%M:%S"`
-    /usr/local/jamf/bin/jamf policy -trigger osupdates
+    /usr/local/jamf/bin/jamf policy -trigger App11
     echo `date +"%Y-%m-%d %H:%M:%S"`
     touch /Library/Application\ Support/DT/.$check
     sleep 2
