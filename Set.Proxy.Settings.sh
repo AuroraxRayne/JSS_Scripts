@@ -10,11 +10,11 @@
 ####################################################################################################
 
 # HARDCODED VALUES ARE SET HERE
-autoProxyURL="http://pac.canada.dt.inc:8080/dt.pac"
+autoProxyURL=""
 
 # CHECK TO SEE IF A VALUE WAS PASSED FOR $4, AND IF SO, ASSIGN IT
 
-	autoProxyURL="http://pac.canada.dt.inc:8080/dt.pac"
+	autoProxyURL=""
 
 # Detects all network hardware & creates services for all installed network hardware
 /usr/sbin/networksetup -detectnewhardware
