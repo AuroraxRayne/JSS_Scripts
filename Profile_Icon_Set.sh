@@ -10,5 +10,5 @@ sleep 1
 dscl . delete /Users/$loggedInUser Picture
 sleep 1
 # Set New Icon
-dscl . create /Users/$loggedInUser Picture "/Library/User Pictures/Custom/CoxAuto.tif"
+dscl . create /Users/$loggedInUser Picture "/path/to/tif"
 
