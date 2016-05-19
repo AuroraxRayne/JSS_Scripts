@@ -6,7 +6,7 @@
 
 if [[ "$4" != "" ]]; then
 homepage="$4" # This lets us override homepage setting via Casper Remote or policy
-
+fi
 
 un=`ls -l /dev/console | cut -d " " -f4`
 
