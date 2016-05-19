@@ -9,10 +9,10 @@ dscl . -create /Users/caspersvc UserShell /bin/bash
 dscl . -passwd /Users/caspersvc "PASSWORD"  # Obviously, use something else here
 
 # Set up a hidden home folder
-dscl . -create /Users/caspersvc NFSHomeDirectory /private/var/caspersvc  # or other hidden location
-cp -R /System/Library/User\ Template/English.lproj /private/var/caspersvc
-chown -R caspersvc:wheel /private/var/caspersvc
+dscl . -create /Users/USERNAME NFSHomeDirectory /private/var/USERNAME  # or other hidden location
+cp -R /System/Library/User\ Template/English.lproj /private/var/USERNAME
+chown -R USERNAME:wheel /private/var/USERNAME
 
 # Grant admin & ARD rights
-dseditgroup -o edit -a caspersvc -t user admin
+dseditgroup -o edit -a USERNAME -t user admin
 /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -on -users UNAMES -privs -all -restart -agent
