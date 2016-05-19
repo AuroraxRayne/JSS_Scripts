@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# SetHomepages.sh
 
 # This script assumes that default preference files for all three browsers have been installed
 # with FUT/FEU options in Casper.
@@ -11,10 +10,6 @@ homepage="$4" # This lets us override homepage setting via Casper Remote or poli
 
 un=`ls -l /dev/console | cut -d " " -f4`
 
-# Loop through each user to set homepage prefs
-#for user in $(ls /Users | grep -v Shared | grep -v npsparcc | grep -v ".localized"); do
-
-    ### Firefox ###
 
     # Define Firefox Profile directory to reference
     firefoxProfilesDir="/Users/$un/Library/Application Support/Firefox/Profiles"
