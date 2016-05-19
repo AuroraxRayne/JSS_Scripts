@@ -2,7 +2,7 @@
 
 # Use "/usr/sbin/systemsetup -listtimezones" to see a list of available list time zones.
 TimeZone="America/New_York"
-TimeServer="time01.dealerdotcom.corp"
+TimeServer="TIME_SERVER"
 
 ############# Pause for network services #############
 /bin/sleep 10
