@@ -52,16 +52,13 @@ un=`ls -l /dev/console | cut -d " " -f4`
     if [[ $urlLineNum == "" ]]; then
     sed -i '' '/restore_on_startup/d' "$chromePrefs"
     sed -i '' '/startup_urls_migration_time/d' "$chromePrefs"
-    sed -i '' "${sessionLines}"'a\
-    "restore_on_startup": 4,\
-    "startup_urls": [ "HOMEPAGE_REPLACE" ]\
-    ' "$chromePrefs"
-    sed -i '' "s#HOMEPAGE_REPLACE#$homepage#g" "$chromePrefs"
+    sed -i '' "${sessionLines}"'a\ "restore_on_startup": 4,\ "startup_urls": [ "HOMEPAGE_REPLACE" ]\' "$chromePrefs"
+    sed -i '' "s/HOMEPAGE_REPLACE/$homepage/g" "$chromePrefs"
     echo "No Chrome homepage already set. Set new Chrome homepage to $homepage for $un."
 
     # Set homepage if there's already one set
     else
-    sed -i '' "${urlLineNum}s#.*#${urlNewLine}#g" "$chromePrefs"
+    sed -i '' "${urlLineNum}s/.*/${urlNewLine}/g" "$chromePrefs"
     sed -i '' '/startup_urls_migration_time/d' "$chromePrefs"
     echo "A Chrome homepage already set. Set new Chrome homepage to $homepage for $un."
     fi
