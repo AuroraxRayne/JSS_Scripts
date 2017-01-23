@@ -36,7 +36,7 @@ if [[ "$fvstatus" =~ "FileVault is Off" ]]; then
 	/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -icon /System/Library/CoreServices/Installer.app/Contents/Resources/Installer.icns -heading "FileVault Decryption Success" -description "FileVault Decryption has started.  Your machine will reboot in 60 seconds." -button1 "OK" -timeout 60 -countdown
 	sleep 2
 	
-	osascript -e 'tell application "System Events" to keystroke "q" using {shift down, option down, command down}'
+	/usr/local/bin/jamf policy -trigger rebootnow
 	
 	exit 0
 else
@@ -67,7 +67,7 @@ else
 			/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -icon /System/Library/CoreServices/Installer.app/Contents/Resources/Installer.icns -heading "FileVault Decryption Success" -description "FileVault Decryption has started.  Your machine will reboot in 60 seconds." -button1 "OK" -timeout 60 -countdown
 			sleep 2
 
-			osascript -e 'tell application "System Events" to keystroke "q" using {shift down, option down, command down}'
+			/usr/local/bin/jamf policy -trigger rebootnow
 
 			exit 0
 		else
