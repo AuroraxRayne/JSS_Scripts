@@ -193,11 +193,11 @@ expect eof
 "
 
 # Test success conditions.
-FV_USERS="$(fdesetup list)"
-if ! egrep -q "^${CURRENT_USER}," <<< "$FV_USERS"; then
+FV_USERS2="$(fdesetup list)"
+if ! egrep -q "^${CURRENT_USER}," <<< "$FV_USERS2"; then
     echo "[ERROR] $CURRENT_USER is not on the list of FileVault enabled users:"
-    echo "$FV_USERS"
-	echo "Displaying \"success\" message..."
+    echo "$FV_USERS2"
+	echo "Displaying \"failure\" message..."
     launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$FAIL_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
 	exit 1
 	
@@ -205,8 +205,8 @@ else
 	echo "Displaying \"success\" message..."
     launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$SUCCESS_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
 	fdesetup sync
-	FV_USERS2="$(fdesetup list)"
-	echo "$FV_USERS2"
+	FV_USERS3="$(fdesetup list)"
+	echo "$FV_USERS3"
 fi
 
 # Reload FDERecoveryAgent, if it was unloaded earlier.
