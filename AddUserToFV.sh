@@ -1,23 +1,4 @@
-#!/bin/bash
-
-###
-#
-#            Name:  reissue_filevault_recovery_key.sh
-#     Description:  This script is intended to run on Macs which no longer have
-#                   a valid recovery key in the JSS. It prompts users to enter
-#                   their Mac password, and uses this password to generate a
-#                   new FileVault key and escrow with the JSS. The "redirect
-#                   FileVault keys to JSS" configuration profile must already
-#                   be deployed in order for this script to work correctly.
-#          Author:  Elliot Jordan <elliot@lindegroup.com>
-#         Created:  2015-01-05
-#   Last Modified:  2016-12-05
-#         Version:  1.6.2
-#
-###
-
-
-################################## VARIABLES ##################################
+#!/bin/sh
 
 # Your company's logo, in PNG format. (For use in jamfHelper messages.)
 # Use standard UNIX path format:  /path/to/file.png
@@ -35,11 +16,11 @@ PROMPT_TITLE="FileVault Login Fix"
 # their password. All message strings below can be multiple lines.
 PROMPT_MESSAGE=" Your Cox Automotive issued computer is currently encrypted.  Your FileVault and Login passwords maybe out of sync.  This process will help allow us to sync up those password.
 
-Click the Next button to begin the process and you will be prompted for your Login Password."
+Click the Next button to begin the process and you will be prompted for your Login (newest) Password."
 
 # The body of the message that will be displayed before prompting the user for
 # their password. All message strings below can be multiple lines.
-PROMPT_MESSAGE2="Click the Next button to begin the process and you will be prompted for your FileVault Password (The first password you type in after a reboot)."
+PROMPT_MESSAGE2="Click the Next button to continue the process and you will be prompted for your FileVault Password (The first password you type in after a reboot)."
 
 # The body of the message that will be displayed after 5 incorrect passwords.
 FORGOT_PW_MESSAGE="You made five incorrect password attempts.
@@ -148,7 +129,7 @@ launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_P
 
 # Get the logged in user's password via a prompt.
 echo "Prompting $CURRENT_USER for their Mac password..."
-USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Please enter the password you use to log in to your Mac:" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
+USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Please enter the password you use to log in to your Mac (Second prompt):" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
 
 # Thanks to James Barclay (@futureimperfect) for this password validation loop.
 TRY=1
@@ -178,19 +159,25 @@ if launchctl list | grep -q "com.apple.security.FDERecoveryAgent"; then
     echo "Unloading FDERecoveryAgent..."
     launchctl unload /System/Library/LaunchDaemons/com.apple.security.FDERecoveryAgent.plist
 fi
+echo "running fdesetup commands"
 
-expect -c "
-log_user 0
-spawn fdesetup add -usertoadd $CURRENT_USER
-expect \"Enter a password for '/', or the recovery key:\"
-send "{${FV_PASS}}"
-send \r
-expect \"Enter the password for the added user "'$CURRENT_USER'":\"
-send "{${USER_PASS}}"
-send \r
-log_user 1
-expect eof
-"
+sleep 2
+
+    expect -c "
+    log_user 0
+    spawn fdesetup add -usertoadd {${CURRENT_USER}}
+    expect \"Enter a password for '/', or the recovery key:\"
+    send "{${FV_PASS}}"
+    send \r
+    expect \"Enter the password for the added user '{${CURRENT_USER}}':\"
+    send "{${USER_PASS}}"
+    send \r
+    log_user 1
+    expect eof
+    "
+sleep 2
+
+echo "finished fdesetup commands"
 
 # Test success conditions.
 FV_USERS2="$(fdesetup list)"
