@@ -61,7 +61,6 @@ Version=1.2
 # 
 # Thanks to Rick Lemmon for the suggested changes to the AD unbind process.
 
-clear
 
 #listUsers="$(/usr/bin/dscl . list /Users UniqueID | awk '$2 > 1000 {print $1}') FINISHED"
 FullScriptName=`basename "$0"`
@@ -69,18 +68,6 @@ ShowVersion="$FullScriptName $Version"
 check4AD=`/usr/bin/dscl localhost -list . | grep "Active Directory"`
 osvers=$(sw_vers -productVersion | awk -F. '{print $2}')
 
-/bin/echo "********* Running $FullScriptName Version $Version *********"
-
-RunAsRoot()
-{
-        ##  Pass in the full path to the executable as $1
-        if [[ "${USER}" != "root" ]] ; then
-                /bin/echo
-                /bin/echo "***  This application must be run as root.  Please authenticate below.  ***"
-                /bin/echo
-                sudo "${1}" && exit 0
-        fi
-}
 
 RemoveAD(){
 
