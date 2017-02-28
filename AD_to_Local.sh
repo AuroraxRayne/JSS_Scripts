@@ -133,11 +133,9 @@ if [[ "$accounttype" = "Active Directory" ]]; then
 	   /bin/echo "$netname has an AD mobile account.\nConverting to a local account with the same username and UID.\n"
 	else
 	   /bin/echo "The $netname account is not a AD mobile account\n"
-	   break
 	fi
 else
 	/bin/echo "The $netname account is not a AD mobile account\n"
-	break
 fi
 
 # Preserve the account password by backing up password hash
