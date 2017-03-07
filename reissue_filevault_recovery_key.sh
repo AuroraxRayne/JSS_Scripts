@@ -33,14 +33,14 @@ PROMPT_TITLE="FileVault key repair"
 
 # The body of the message that will be displayed before prompting the user for
 # their password. All message strings below can be multiple lines.
-PROMPT_MESSAGE=" Your Cox Automotive issued computer is currently encrypted.  A recovery key must be escrowed in order for Cox Automotive IT to be able to recover data from your hard drive in case of emergency.
+PROMPT_MESSAGE="Your Cox Automotive issued computer is currently encrypted.  A recovery key must be escrowed in order for Cox Automotive IT to be able to recover data from your hard drive in case of emergency.
 
 Click the Next button below, then enter your Mac's password when prompted."
 
 # The body of the message that will be displayed after 5 incorrect passwords.
-FORGOT_PW_MESSAGE="You made five incorrect password attempts.
+FORGOT_PW_MESSAGE="You made three incorrect password attempts.
 
-Please contact Desktop Support at 802-540-1179 for help with your Mac password."
+Please visit your local Desktop Support for help with your Mac password."
 
 # The body of the message that will be displayed after successful completion.
 SUCCESS_MESSAGE="Thank you! Your FileVault key has been regenerated."
@@ -150,8 +150,8 @@ until dscl /Search -authonly "$CURRENT_USER" "$USER_PASS" &>/dev/null; do
     (( TRY++ ))
     echo "Prompting $CURRENT_USER for their Mac password (attempt $TRY)..."
     USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Sorry, that password was incorrect. Please try again:" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
-    if (( TRY >= 5 )); then
-        echo "[ERROR] Password prompt unsuccessful after 5 attempts. Displaying \"forgot password\" message..."
+    if (( TRY >= 3 )); then
+        echo "[ERROR] Password prompt unsuccessful after 3 attempts. Displaying \"forgot password\" message..."
         launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$FORGOT_PW_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
         exit 1
     fi
