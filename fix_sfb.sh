@@ -13,12 +13,12 @@ fi
 
 
 #Remove files for SFB
-rm -rf /Users/$user/Library/Preferences/com.microsoft.SkypeForBusinessTAP.plis
-rm -rf /Users/$user/Library/Logs/com.microsoft.SkypeForBusinessTAP
-rm -rf /Users/$user/Library/Application\ Support/Skype\ for\ Business
-rm -rf /Users/$user/Library/Application\ Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.microsoft.skypeforbusinesstap.sfl
-rm -rf /Users/$user/Library/Application\ Support/com.microsoft.SkypeForBusinessTAP
-rm -rf /Users/$user/Library/Cookies/com.microsoft.SkypeForBusinessTAP.binarycookies
+rm -rfv /Users/$user/Library/Preferences/com.microsoft.SkypeForBusinessTAP.plist
+rm -rfv /Users/$user/Library/Logs/com.microsoft.SkypeForBusinessTAP
+rm -rfv /Users/$user/Library/Application\ Support/Skype\ for\ Business
+rm -rfv /Users/$user/Library/Application\ Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.microsoft.skypeforbusinesstap.sfl
+rm -rfv /Users/$user/Library/Application\ Support/com.microsoft.SkypeForBusinessTAP
+rm -rfv /Users/$user/Library/Cookies/com.microsoft.SkypeForBusinessTAP.binarycookies
 
 #Remove Keychain Items
 security delete-generic-password -l "Skype for Business" /Users/$user/Library/Keychains/login.keychain
