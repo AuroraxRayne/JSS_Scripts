@@ -57,20 +57,17 @@ set -x
 
 
 #Name our static Device group
-Name="RemoveFromDT"
-
-#Uncomment your data stored in the CSV - no need to edit this
-dataPref="ID"
+Name=""
 
 #Enter in the URL of the JSS we are are pulling and pushing the data to. (NOTE: We will need the https:// and :8443. EX:https://jss.company.com:8443 )
-jssURL="https://casper.dealertrack.com:8443"
+jssURL=""
 
 #Enter in a username and password that has the correct read and write permissions to the JSS API for what data we need
-jssUser="ddcdennisb-sa"
+jssUser=""
 jssPass=""
 
 #CSF file path for devices list - JSS ID numbers only
-devicelist="/Users/ddcdennisb/Desktop/match2.csv"
+devicelist=""
 
 #Default temp file name and path we will build for API submission. - No need to edit this
 groupFilePath="/tmp/devices.xml"
