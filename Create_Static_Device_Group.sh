@@ -67,7 +67,7 @@ jssURL="https://casper.dealertrack.com:8443"
 
 #Enter in a username and password that has the correct read and write permissions to the JSS API for what data we need
 jssUser="ddcdennisb-sa"
-jssPass="Db075685!"
+jssPass=""
 
 #CSF file path for devices list - JSS ID numbers only
 devicelist="/Users/ddcdennisb/Desktop/match2.csv"
