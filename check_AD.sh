@@ -1,5 +1,13 @@
 #!/bin/sh
 
+#check to be sure computer is bound to AD
+domainCheck=$(dsconfigad -show | grep 'Active Directory Domain')
+
+if [[ ${domainCheck} == "" ]]; then
+	echo "This computer is not joined to a domain"
+	exit 1
+fi
+
 #Setting Variables to compare later on
 mobileEnabled=$(dsconfigad -show | grep "Create mobile" | awk '{print $7}')
 
