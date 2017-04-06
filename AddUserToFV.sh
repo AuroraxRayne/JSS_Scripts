@@ -25,12 +25,12 @@ PROMPT_MESSAGE2="Click the Next button to continue the process and you will be p
 # The body of the message that will be displayed after 5 incorrect passwords.
 FORGOT_PW_MESSAGE="You made five incorrect password attempts.
 
-Please contact Desktop Support at 802-540-1179 for help with your Mac password."
+Please contact your local Desktop Support for help with your Mac password or try running this again from self service."
 
 # The body of the message that will be displayed after successful completion.
-SUCCESS_MESSAGE="Your FileVault login as been synced!"
+SUCCESS_MESSAGE="Your FileVault login has been synced!"
 
-FAIL_MESSAGE="Something has not work successfully.  Please visit your local Desktop Support Group to resolve the issue."
+FAIL_MESSAGE="Something has not worked right.  Please visit your local Desktop Support Group to help resolve the issue or try running this again from self service."
 
 
 ###############################################################################
@@ -123,12 +123,13 @@ elif [[ "$OS_MAJOR" -eq 10 && "$OS_MINOR" -gt 9 ]]; then
     L_METHOD="asuser"
 fi
 
-addUser ()
-{
+# Display a branded prompt explaining the password prompt.
+echo "Alerting user $CURRENT_USER about incoming password prompt..."
+launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -button1 "Next" -defaultButton 1 -startlaunchd &>/dev/null
 
 # Get the logged in user's password via a prompt.
 echo "Prompting $CURRENT_USER for their Mac password..."
-USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Please enter the password your current network password:" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
+USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Please enter the password your current network password (E-mail, Fuel, join.me, etc):" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
 
 # Thanks to James Barclay (@futureimperfect) for this password validation loop.
 TRY=1
@@ -177,22 +178,20 @@ sleep 2
 sleep 2
 
 echo "finished fdesetup commands"
-
 # Test success conditions.
 FV_USERS2="$(fdesetup list)"
+sleep 2
 if ! egrep -q "^${CURRENT_USER}," <<< "$FV_USERS2"; then
     echo "[ERROR] $CURRENT_USER is not on the list of FileVault enabled users:"
-    echo "$FV_USERS2"
-	echo "Displaying \"failure\" message..."
+    echo "Failed Users are: $FV_USERS2"
+	echo "Displaying failure message..."
     launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$FAIL_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
 	exit 1
-	
 else
-	echo "Displaying \"success\" message..."
+	echo "Enabled Users are: $FV_USERS2"
+	echo "Displaying success message..."
     launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$SUCCESS_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
-	fdesetup sync
-	FV_USERS3="$(fdesetup list)"
-	echo "$FV_USERS3"
+    fdesetup sync
 fi
 
 # Reload FDERecoveryAgent, if it was unloaded earlier.
@@ -202,20 +201,4 @@ if [[ "$FDERA" == "true" ]]; then
         echo "Loading FDERecoveryAgent..."
         launchctl load /System/Library/LaunchDaemons/com.apple.security.FDERecoveryAgent.plist
     fi
-fi
-
-exit $FDESETUP_RESULT
-}
-
-
-# Display a branded prompt explaining the password prompt.
-echo "Alerting user $CURRENT_USER about incoming password prompt..."
-prompt=$("$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -timeout 300 -button1 "Next" -defaultButton "2")
-
-if [ $"prompt" == "0" ]; then
-	echo "Lets run addUser"
-	addUser
-else
-	echo "Timer ran out"
-	exit 1
 fi
