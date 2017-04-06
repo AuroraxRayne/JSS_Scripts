@@ -136,19 +136,6 @@ elif [[ "$OS_MAJOR" -eq 10 && "$OS_MINOR" -gt 9 ]]; then
     L_METHOD="asuser"
 fi
 
-# Display a branded prompt explaining the password prompt.
-echo "Alerting user $CURRENT_USER about incoming password prompt..."
-prompt=$("$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -timeout 300 -button1 "Next" -defaultButton "2")
-
-if [ "$prompt" == "0" ]; then
-	echo "Lets run reissueKey"
-	reissueKey
-else
-	echo "5 min timeout has been reached"
-	exit 1
-fi
-
-
 reissueKey () 
 {
 # Get the logged in user's password via a prompt.
@@ -224,3 +211,16 @@ fi
 
 exit $FDESETUP_RESULT
 }
+
+
+# Display a branded prompt explaining the password prompt.
+echo "Alerting user $CURRENT_USER about incoming password prompt..."
+prompt=$("$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -timeout 300 -button1 "Next" -defaultButton "2")
+
+if [ "$prompt" == "0" ]; then
+	echo "Lets run reissueKey"
+	reissueKey
+else
+	echo "5 min timeout has been reached"
+	exit 1
+fi
