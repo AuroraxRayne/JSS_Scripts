@@ -37,7 +37,7 @@ PROMPT_MESSAGE="Your Cox Automotive issued computer is currently encrypted.  A r
 
 Click the Next button below, then enter your Mac's password when prompted."
 
-# The body of the message that will be displayed after 5 incorrect passwords.
+# The body of the message that will be displayed after 3 incorrect passwords.
 FORGOT_PW_MESSAGE="You made three incorrect password attempts.
 
 Please visit your local Desktop Support for help with your Mac password."
@@ -138,8 +138,19 @@ fi
 
 # Display a branded prompt explaining the password prompt.
 echo "Alerting user $CURRENT_USER about incoming password prompt..."
-launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -button1 "Next" -defaultButton 1 -startlaunchd &>/dev/null
+prompt=$("$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -timeout 300 -button1 "Next" -defaultButton "2")
 
+if [ "$prompt" == "0" ]; then
+	echo "Lets run reissueKey"
+	reissueKey
+else
+	echo "5 min timeout has been reached"
+	exit 1
+fi
+
+
+reissueKey () 
+{
 # Get the logged in user's password via a prompt.
 echo "Prompting $CURRENT_USER for their Mac password..."
 USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Please enter the password you use to log in to your Mac:" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
@@ -212,3 +223,4 @@ if [[ "$FDERA" == "true" ]]; then
 fi
 
 exit $FDESETUP_RESULT
+}
