@@ -123,18 +123,6 @@ elif [[ "$OS_MAJOR" -eq 10 && "$OS_MINOR" -gt 9 ]]; then
     L_METHOD="asuser"
 fi
 
-# Display a branded prompt explaining the password prompt.
-echo "Alerting user $CURRENT_USER about incoming password prompt..."
-prompt=$("$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -timeout 300 -button1 "Next" -defaultButton "2")
-
-if [ $"prompt" == "0" ]; then
-	echo "Lets run addUser"
-	addUser
-else
-	echo "Timer ran out"
-	exit 1
-fi
-
 addUser ()
 {
 
