@@ -22,8 +22,8 @@ Click the Next button to begin the process and you will be prompted for your Log
 # their password. All message strings below can be multiple lines.
 PROMPT_MESSAGE2="Click the Next button to continue the process and you will be prompted for your FileVault Password (The first password you type in after a reboot)."
 
-# The body of the message that will be displayed after 5 incorrect passwords.
-FORGOT_PW_MESSAGE="You made five incorrect password attempts.
+# The body of the message that will be displayed after 3 incorrect passwords.
+FORGOT_PW_MESSAGE="You made three incorrect password attempts.
 
 Please contact your local Desktop Support for help with your Mac password or try running this again from self service."
 
@@ -123,10 +123,8 @@ elif [[ "$OS_MAJOR" -eq 10 && "$OS_MINOR" -gt 9 ]]; then
     L_METHOD="asuser"
 fi
 
-# Display a branded prompt explaining the password prompt.
-echo "Alerting user $CURRENT_USER about incoming password prompt..."
-launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -button1 "Next" -defaultButton 1 -startlaunchd &>/dev/null
-
+addUser ()
+{
 # Get the logged in user's password via a prompt.
 echo "Prompting $CURRENT_USER for their Mac password..."
 USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Please enter the password your current network password (E-mail, Fuel, join.me, etc):" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
@@ -137,8 +135,8 @@ until dscl /Search -authonly "$CURRENT_USER" "$USER_PASS" &>/dev/null; do
     (( TRY++ ))
     echo "Prompting $CURRENT_USER for their Mac password (attempt $TRY)..."
     USER_PASS="$(launchctl "$L_METHOD" "$L_ID" osascript -e 'display dialog "Sorry, that password was incorrect. Please try again:" default answer "" with title "'"${PROMPT_TITLE//\"/\\\"}"'" giving up after 86400 with text buttons {"OK"} default button 1 with hidden answer with icon file "'"${LOGO_ICNS//\"/\\\"}"'"' -e 'return text returned of result')"
-    if (( TRY >= 5 )); then
-        echo "[ERROR] Password prompt unsuccessful after 5 attempts. Displaying \"forgot password\" message..."
+    if (( TRY >= 3 )); then
+        echo "[ERROR] Password prompt unsuccessful after 3 attempts. Displaying \"forgot password\" message..."
         launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$FORGOT_PW_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
         exit 1
     fi
@@ -201,4 +199,17 @@ if [[ "$FDERA" == "true" ]]; then
         echo "Loading FDERecoveryAgent..."
         launchctl load /System/Library/LaunchDaemons/com.apple.security.FDERecoveryAgent.plist
     fi
+fi
+}
+
+# Display a branded prompt explaining the password prompt.
+echo "Alerting user $CURRENT_USER about incoming password prompt..."
+prompt=$("$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$PROMPT_MESSAGE" -timeout 300 -button1 "Next" -defaultButton "2")
+
+if [ "$prompt" == "0" ]; then
+	echo "Lets run addUser"
+	addUser
+else
+	echo "5 min timer ran out"
+	exit 1
 fi
