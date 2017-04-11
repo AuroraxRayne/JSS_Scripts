@@ -101,16 +101,7 @@ if [[ "${check4AD}" = "Active Directory" ]]; then
 		/bin/echo "AD binding has been removed."
 fi
 
-netname=`/usr/bin/osascript <<EOT
-tell application "System Events"
-    activate
-    with timeout of 600 seconds
-        set netname to text returned of (display dialog "Please type in Active Directory Username" default answer "" with icon 2)
-	end timeout
-end tell
-EOT`
-	
-
+netname=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 	
 accounttype=`/usr/bin/dscl . -read /Users/"$netname" AuthenticationAuthority | head -2 | awk -F'/' '{print $2}' | tr -d '\n'`
 			
