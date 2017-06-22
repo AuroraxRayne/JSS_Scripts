@@ -120,33 +120,6 @@ else
     /bin/echo "Disk Check: ERROR - ${freeSpace%.*}GB Free Space Detected"
 fi
 
-##Check for existing Sierra installer
-if [ -e "$OSInstaller" ]; then
-  /bin/echo "$OSInstaller found, checking version."
-  OSVersion=`/usr/libexec/PlistBuddy -c 'Print :"System Image Info":version' "$OSInstaller/Contents/SharedSupport/InstallInfo.plist"`
-  /bin/echo "OSVersion is $OSVersion"
-  if [ $OSVersion = $version ]; then
-    downloadSierra="No"
-  else
-    downloadSierra="Yes"
-    ##Delete old version.
-    /bin/echo "Installer found, but old. Deleting..."
-    /bin/rm -rf "$OSInstaller"
-  fi
-else
-  downloadSierra="Yes"
-fi
-
-##Download Sierra if needed
-if [ $downloadSierra = "Yes" ]; then
-  /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper \
-      -windowType utility -title "$title"  -alignHeading center -alignDescription left -description "$dldescription" \
-      -button1 Ok -defaultButton 1 -icon "$icon" -iconSize 100
-  ##Run policy to cache installer
-  /usr/local/jamf/bin/jamf policy -event $download_trigger
-else
-  /bin/echo "macOS Sierra installer with $version was already present, continuing..."
-fi
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # CREATE FIRST BOOT SCRIPT
