@@ -132,10 +132,6 @@ fi
 ## Clean up files
 /bin/rm -fdr "$OSInstaller"
 /bin/sleep 2
-## Install SFB
-/usr/local/jamf/bin/jamf policy -trigger sfbpush
-## Install O2016
-/usr/local/jamf/bin/jamf policy -trigger o2016push
 ## Update Device Inventory
 /usr/local/jamf/bin/jamf recon
 ## Remove LaunchDaemon
@@ -174,6 +170,54 @@ EOF
 /usr/sbin/chown root:wheel /Library/LaunchDaemons/com.jamfps.cleanupOSInstall.plist
 /bin/chmod 644 /Library/LaunchDaemons/com.jamfps.cleanupOSInstall.plist
 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# CREATE SFB/O2016 SCRIPT
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+/bin/mkdir /usr/local/jamfps
+
+/bin/echo "#!/bin/bash
+## Install SFB
+/usr/local/jamf/bin/jamf policy -trigger sfbpush
+## Install O2016
+/usr/local/jamf/bin/jamf policy -trigger o2016push
+## Update Device Inventory
+/usr/local/jamf/bin/jamf recon
+exit 0" > /usr/local/jamfps/otherInstall.sh
+
+/usr/sbin/chown root:admin /usr/local/jamfps/otherInstall.sh
+/bin/chmod 755 /usr/local/jamfps/otherInstall.sh
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# LAUNCH DAEMON
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cat << EOF > /Library/LaunchDaemons/com.jamfps.otherInstall.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.jamfps.otherInstall</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>/usr/local/jamfps/otherInstall.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+	<key>StartInterval</key>
+	<integer>30</integer>
+</dict>
+</plist>
+EOF
+
+##Set the permission on the file just made.
+/usr/sbin/chown root:wheel /Library/LaunchDaemons/com.jamfps.otherInstall.plist
+/bin/chmod 644 /Library/LaunchDaemons/com.jamfps.otherInstall.plist
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # APPLICATION
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -199,6 +243,8 @@ else
     ## Remove Script
     /bin/rm -f /usr/local/jamfps/finishOSInstall.sh
     /bin/rm -f /Library/LaunchDaemons/com.jamfps.cleanupOSInstall.plist
+	/bin/rm -f /usr/local/jamfpf/otherInstall.sh
+	/bin/rm -f /Library/LaunchDaemons/com.jamfps.otherInstall.plist
 
     /bin/echo "Launching jamfHelper Dialog (Requirements Not Met)..."
     /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -title "$title" -icon "$icon" -heading "Requirements Not Met" -description "We were unable to prepare your computer for macOS Sierra. Please ensure you are connected to power and that you have at least 15GB of Free Space.
