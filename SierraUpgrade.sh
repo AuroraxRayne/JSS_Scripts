@@ -112,7 +112,7 @@ else
     freeSpace=$( /usr/sbin/diskutil info / | grep "Free Space" | awk '{print $4}' )
 fi
 
-if [[ ${freeSpace%.*} -ge 15 ]]; then
+if [[ ${freeSpace%.*} -ge 30 ]]; then
     spaceStatus="OK"
     /bin/echo "Disk Check: OK - ${freeSpace%.*}GB Free Space Detected"
 else
@@ -247,7 +247,7 @@ else
 	/bin/rm -f /Library/LaunchDaemons/com.jamfps.otherInstall.plist
 
     /bin/echo "Launching jamfHelper Dialog (Requirements Not Met)..."
-    /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -title "$title" -icon "$icon" -heading "Requirements Not Met" -description "We were unable to prepare your computer for macOS Sierra. Please ensure you are connected to power and that you have at least 15GB of Free Space.
+    /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -title "$title" -icon "$icon" -heading "Requirements Not Met" -description "We were unable to prepare your computer for macOS Sierra. Please ensure you are connected to power and that you have at least 30GB of Free Space.
     
     If you continue to experience this issue, please contact your local Desktop Support Group." -iconSize 100 -button1 "OK" -defaultButton 1
 
