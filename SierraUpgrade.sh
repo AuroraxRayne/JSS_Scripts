@@ -137,7 +137,7 @@ fi
 ## Remove LaunchDaemon
 /bin/rm -f /Library/LaunchDaemons/com.jamfps.cleanupOSInstall.plist
 ## Remove Script
-/bin/rm -fdr /usr/local/jamfps
+/bin/rm -fdr /usr/local/jamfps/finishOSInstall.sh
 exit 0" > /usr/local/jamfps/finishOSInstall.sh
 
 /usr/sbin/chown root:admin /usr/local/jamfps/finishOSInstall.sh
