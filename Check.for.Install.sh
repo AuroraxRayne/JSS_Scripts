@@ -4,7 +4,6 @@
 if [[ "$4" != "" ]]; then
 check="$4"
 fi
-
 echo "Application to check for: $check"
 
 if [ -d "/Applications/$check" ]; then
