@@ -1,6 +1,9 @@
 #!/bin/sh
 LoggedInUser=`ls -l /dev/console | cut -d " " -f4`
 
+#create an array of all user names
+	Users=( $(ls /Users) )
+	
 if [[ "$4" != "" ]]; then
 un="$4"
 fi
@@ -18,6 +21,17 @@ domain=$(dsconfigad -show | grep 'Active Directory Domain')
 
 if [[ ${domain} == "" ]]; then
 	echo "This computer is not currently joined to a domain.  Please run Migrate to Man.co NON-DOMAIN JOINED found in Self Service."
+	for user in ${Users[@]}; do
+		echo "$user"
+		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]]; then
+		    echo "Local User.  Doing Nothing"
+		else
+		   	#delete mobile account
+			echo "Deleting Mobile account for $user"
+			dscl . -delete /Users/$user
+			
+		fi
+	done
 	exit 1
 fi
 
@@ -29,11 +43,13 @@ echo "Unjoining $olddomain"
 
 dsconfigad -remove -u $un -p $pass
 
-sleep 3
+sleep 5
 
 #Chcek to see if disjoin worked.  If not, a forced disjoin will be done and then joined to new Domain.  If the disjoin worked at first it will just join to the new domain.
-domain1=$(dsconfigad -show | grep 'Active Directory Domain')
+domain1=$(dsconfigad -show | awk '/Active Directory Domain/ {print $4}')
 echo "you are on domain: $domain1"
+
+sleep 5
 
 if [[ ${domain1} =~ '$olddomain' ]]; then
 	echo "Still on $olddomain"
@@ -55,21 +71,14 @@ domain2=$(dsconfigad -show | grep 'Active Directory Domain')
 echo "results of first check is: $domain2"
 
 sleep 3
-# If on the new Domain, reset permissions on home directory to new UUID for first Login
-if [[ ${domain2} =~ $newdomain ]]; then
-	echo "Sweet you are on $newdomain You are all set"
-	echo "Lets clean up your old account"
-	
-	#create an array of all user names
-	Users=( $(ls /Users) )
-
-	#Run through array to delete mobile account and fix permissions as long as the username is not admin, administrator, fixme or Shared
+#Run through array to delete mobile account and fix permissions as long as the username is not admin, administrator, fixme or Shared
 	for user in ${Users[@]}; do
 		echo "$user"
-		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]]; then
-		    echo ""
+		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]]; then
+		    echo "Local User.  Doing Nothing"
 		else
-			#delete mobile account
+		   	#delete mobile account
+			echo "Deleting Mobile account for $user"
 			dscl . -delete /Users/$user
 			
 			sleep 10
@@ -79,7 +88,24 @@ if [[ ${domain2} =~ $newdomain ]]; then
 			#change ownership of home dir to new UUID
 			chown -R $user /Users/$user
 			sleep 5
-			/usr/local/jamf/bin/jamf manage
+		fi
+	done
+
+# If on the new Domain, reset permissions on home directory to new UUID for first Login
+if [[ ${domain2} =~ $newdomain ]]; then
+	echo "Sweet you are on $newdomain You are all set"
+	
+	#Run through array to delete mobile account and fix permissions as long as the username is not admin, administrator, fixme or Shared
+	for user in ${Users[@]}; do
+		echo "$user"
+		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]]; then
+		    echo "Local User.  Doing Nothing"
+		else
+		  	#Fix Permissions
+			echo "Lets fix permissions on $user home directory"
+			#change ownership of home dir to new UUID
+			chown -R $user /Users/$user
+			sleep 5
 		fi
 	done
 	
