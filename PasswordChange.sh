@@ -95,6 +95,19 @@ log_dir="$HOME/Library/Logs/passwordChange"
 log_file="pwChangeCleanup.log"
 log_location="$log_dir/$log_file"
 
+if [[ -d “$log_dir” ]]; then
+	if [[ -f $log_file ]]; then
+		echo “Log file exists”
+	else
+		touch $log_file
+	fi
+	else
+	echo “Making Log folder and file”
+	mkdir $log_dir
+	cd $log_dir
+	touch $log_file
+fi
+
 # Replace this with the name of your SSID
 ssidName="ddc"
 
