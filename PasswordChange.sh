@@ -109,7 +109,7 @@ if [[ -d “$log_dir” ]]; then
 fi
 
 # Replace this with the name of your SSID
-ssidName="ddc"
+ssidName=("ddc" "Dealertrack-TM" "Dealertrack-Mobile" "CAI-Mobile" "MANSWN")
 
 # Setting IFS Env to only use new lines as field seperator 
 IFS=$'\n'
@@ -174,28 +174,30 @@ peapRemove ()
 {
 echo "\n----------------------------------------------"
 
-if [[ `/usr/bin/security find-generic-password -s "com.apple.network.eap.user.item.wlan.ssid.$ssidName" $userKeychain` ]]
-	then
-		peapPasswordClearStatus=0
-		until (( $peapPasswordClearStatus == 1 ))
-			do
-				echo "Looking for existing entries for $ssidName password..."
-				if [[ `/usr/bin/security find-generic-password -s "com.apple.network.eap.user.item.wlan.ssid.$ssidName" $userKeychain` ]]
-					then
-						echo "Found an existing password in user keychain for $ssidName.  Attempting to delete..."
-						/usr/bin/security delete-generic-password -s "com.apple.network.eap.user.item.wlan.ssid.$ssidName"
-							if (( $? == 0 ))
-								then 
-									echo "SSID password for $ssidName deleted"
-							fi
-					else
-						echo "Did NOT find any more passwords in user keychain for SSID $ssidName."
-                        peapPasswordClearStatus=1
-				fi
-			done
-	else 
-		echo "Did not find a saved password for SSID"
-fi
+for ssid in ${ssidName[@]}; do
+	if [[ `/usr/bin/security find-generic-password -s "com.apple.network.eap.user.item.wlan.ssid.$ssid" $userKeychain` ]]
+		then
+			peapPasswordClearStatus=0
+			until (( $peapPasswordClearStatus == 1 ))
+				do
+					echo "Looking for existing entries for $ssid password..."
+					if [[ `/usr/bin/security find-generic-password -s "com.apple.network.eap.user.item.wlan.ssid.$ssid" $userKeychain` ]]
+						then
+							echo "Found an existing password in user keychain for $ssid.  Attempting to delete..."
+							/usr/bin/security delete-generic-password -s "com.apple.network.eap.user.item.wlan.ssid.$ssid"
+								if (( $? == 0 ))
+									then 
+										echo "SSID password for $ssid deleted"
+								fi
+						else
+							echo "Did NOT find any more passwords in user keychain for SSID $ssid."
+                        	peapPasswordClearStatus=1
+					fi
+				done
+		else 
+			echo "Did not find a saved password for SSID"
+	fi
+done	
 }
 
 peapRemove >> $log_location 2>&1
