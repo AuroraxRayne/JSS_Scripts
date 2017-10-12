@@ -11,7 +11,7 @@ users=()
 
 #Get a list of Users
 IDs=`curl -H "Accept: application/xml" -H "Content-Type: application/xml" -k -v -u $jssUser:$jssPass ${jssURL}/JSSResource/users -X GET`
-size=`echo $IDs | xpath //users/size | sed 's/<[^>]*>//g'`
+size=`echo $IDs | xpath //size | sed 's/<[^>]*>//g'`
 echo "IDs: $IDs"
 
 echo $size " user objects will be scanned."
