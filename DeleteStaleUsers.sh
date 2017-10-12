@@ -28,7 +28,7 @@ done
 for i in "${users[@]}"
 do
 	echo "Checking on ${i}"
-	user=`curl -H "Content-Type: application/xml" -k -u $jssUser:$jssPass ${jssURL}/JSSResource/users/id/${i} -X GET`
+	user=`curl -H "Accept: application/xml" -H "Content-Type: application/xml" -k -u $jssUser:$jssPass ${jssURL}/JSSResource/users/id/${i} -X GET`
 	computers=`echo $user | xpath //user/links/computers | grep id`
 	devices=`echo $user | xpath //user/links/mobile_devices | grep id`
 	vpp=`echo $user | xpath //user/links/vpp_assignments | grep id`
