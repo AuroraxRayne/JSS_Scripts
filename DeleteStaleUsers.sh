@@ -10,7 +10,7 @@ index="0"
 users=()
 
 #Get a list of Users
-IDs=`curl -H "Content-Type: application/xml" -k -u $jssUser:$jssPass ${jssURL}/JSSResource/users -X GET`
+IDs=`curl -H "Accept: application/xml" -H "Content-Type: application/xml" -k -u $jssUser:$jssPass ${jssURL}/JSSResource/users -X GET`
 size=`echo $IDs | xpath //users/size | sed 's/<[^>]*>//g'`
 echo "IDs: $IDs"
 
