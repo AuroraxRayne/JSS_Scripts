@@ -10,10 +10,10 @@ fRunUpgrade ()
 	OS_MINOR=$(sw_vers -productVersion | awk -F . '{print $2}')
 	if [[ "$OS_MINOR" -le 9 ]]; then
 	    echo "Lets run the Upgrade to Sierra 10-"
-		/usr/local/jamf/bin/jamf policy -trigger upgradeToSierra9
+		/usr/local/jamf/bin/jamf policy -trigger #upgradeToSierra9
 	else
 		echo "Lets run the upgrade to Sierra 10+"
-		/usr/local/jamf/bin/jamf policy -trigger upgradeToSierra10
+		/usr/local/jamf/bin/jamf policy -trigger #upgradeToSierra10
 	fi
     
     exit 0
