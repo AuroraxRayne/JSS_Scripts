@@ -7,7 +7,7 @@ LoggedInUser=`ls -l /dev/console | cut -d " " -f4`
 fRunUpgrade ()
 {    
 	echo "Lets run the License upgrade tool"
-	/usr/local/jamf/bin/jamf policy -trigger #2016VolRemoval
+	/usr/local/jamf/bin/jamf policy -trigger 2016VolRemoval
 	exit 0
 }
 
