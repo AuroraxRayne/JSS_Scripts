@@ -26,7 +26,7 @@ else
 	
 To start the upgrade process, close all open applications and then click the \"Install\" button below.  If you do not want to do it now, you can go into Self Service and run the \"Upgrade to Sierra\" option found on the main page.
 
-**Please note that after January 8th 2018, this update will be forced.**
+**Please note that after January 8th 2018, this update will be mandated.**
 
 " -button1 "Install" -button2 "Cancel" -defaultButton "2" -cancelButton "2" -timeout 900 -countdown -alignCountdown center -alignDescription justified)
 

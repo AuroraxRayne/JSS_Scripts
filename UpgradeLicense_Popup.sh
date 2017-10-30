@@ -20,7 +20,7 @@ Once complete, Outlook will open and you will be required to login to activate y
 
 If now is not a good time, you can open \"Self Service\" and run the \"2016 Vol Removal\" tool.
 
-**Please note that after January 8th 2018, this update will be forced.**
+**Please note that after January 8th 2018, this update will be mandated.**
 
 " -button1 "Upgrade" -button2 "Cancel" -defaultButton "2" -cancelButton "2" -timeout 900 -countdown -alignCountdown center -alignDescription justified)
 
