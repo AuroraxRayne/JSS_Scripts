@@ -24,7 +24,9 @@ if [ "$LoggedInUser" == "" ]; then
 else
     HELPER=$("$jamfHelper" -windowType utility -icon "$jamfHelperIcon" -heading "OS Upgrade to Support Office 2016 and Skype for Business" -description "Did you know that you can upgrade your Operating System so that you can run the latest version of Office 2016 and Skype for Business for Mac?
 	
-To start the upgrade process, close all open applications and then click the \"Install\" button below.  If you do not want to do it now, you can go into Self Service and run the \"Upgrade to Sierra\" option found on the main page.
+To start the upgrade process, close all open applications and then click the \"Install\" button below.  If you do not want to do it now, you can go into \"Self Service\" and run the \"Upgrade to Sierra\" option found on the main page.
+
+This process takes 45-60 minutes to complete.
 
 **Please note that after January 8th 2018, this update will be mandated.**
 
