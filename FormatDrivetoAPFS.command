@@ -26,8 +26,9 @@ else
 		/usr/sbin/diskutil apfs createContainer /dev/disk0s2
 		echo "We are half way there!!"
 		/bin/sleep 3
+		newDisk=$(/usr/sbin/diskutil list | awk '/APFS Container Scheme/{print $NF}')
 		#lets add a new Volume with name Macintosh HD
-		/usr/sbin/diskutil apfs addVolume disk1 APFS "Macintosh HD"
+		/usr/sbin/diskutil apfs addVolume $newDisk APFS "Macintosh HD"
 		echo "All done!!  Let me open Jamf Imaging for you...."
 		/bin/sleep 3
 	fi
