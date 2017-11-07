@@ -23,14 +23,19 @@ else
 		#Drive is not APFS
 		echo "Drive is not APFS"
 		#Lets Create a Container for APFS
-		/usr/sbin/diskutil apfs createContainer /dev/disk0s2
+		/usr/sbin/diskutil eraseDisk JHFS+ Blah disk0
+		/bin/sleep 2
+		/usr/sbin/diskutil apfs create disk0s2 "Macintosh HD"
 		echo "We are half way there!!"
 		/bin/sleep 3
-		newDisk=$(/usr/sbin/diskutil list | awk '/APFS Container Scheme/{print $NF}')
-		#lets add a new Volume with name Macintosh HD
-		/usr/sbin/diskutil apfs addVolume $newDisk APFS "Macintosh HD"
-		echo "All done!!  Let me open Jamf Imaging for you...."
-		/bin/sleep 3
+		#Lets install Firmware to read APFS
+		/usr/sbin/installer -verbose -pkg /private/var/root/Desktop/FirmwareUpdateStandalone-1.0.pkg -target /Volumes/Macintosh\ HD
+		/bin/sleep 2		
+		#Display Popup about Rebooting to install Firmware
+		/usr/bin/osascript -e'tell app "System Events" to display dialog "This machine will reboot in 20 seconds to install a needed firmware update.  Please allow at least one reboot and then netboot again to image this machine." with title "Reboot Required" giving up after 20'
+		/bin/sleep 2
+		/sbin/shutdown -r now
+		#echo "All done!!  Let me open Jamf Imaging for you...."
 	fi
 	
 fi
