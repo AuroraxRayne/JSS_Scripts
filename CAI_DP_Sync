@@ -1,0 +1,70 @@
+#!/bin/sh
+
+#if [ -e /Volumes/temp ]; then
+#	echo "Mount point already exist"
+#else
+#	echo "Lets create the mount"
+#	mkdir /Volumes/temp
+#fi
+
+#echo "Mounting the Share"
+#mount_smbfs "//<SERVER>;<USERNAME>:<PASSWORD>@<SERVER_FQDN>/CasperShare" /Volumes/temp
+
+#echo " CasperDP CasperShare is now mounted"
+
+#sleep 2           
+
+chmod -R 777 /CasperShare/Packages/
+
+HOSTS=( <LIST_OF_SERVERS>)
+
+#DST="/CasperShare/" #Target directory -- CasperShare
+SOURCE_DIR="/CasperShare/Packages" #Source directory from CasperShare
+STATUS="/var/log/datasync.status"
+NOW=$(/bin/date +"%m-%d-%Y_%H:%M")
+#touch /Users/casperadmin/log/datasync.$NOW.log
+#statlog="/Users/casperadmin/log/datasync.$NOW.log"
+#mkdir /Users/casperadmin/temp2
+
+
+for i in "${HOSTS[@]}"; do
+TODAY=$(/bin/date)
+/usr/bin/touch /Users/casperadmin/log/datasync.$NOW.$i.log
+statlog="/Users/casperadmin/log/datasync.$NOW.$i.log"
+echo "===== Beginning rsync of $i  Date: $TODAY =====" | tee -a $STATUS $statlog
+sleep 2
+
+check_Connection=$(/sbin/ping -c 1 $i)
+
+if [ $? -eq 0 ]; then 
+	/sbin/mount -t smbfs "//$i;<USERNAME>:<PASSWORD>@$i/CasperShare" /Users/casperadmin/temp2
+	DST="/Users/casperadmin/temp2"
+	sleep 2
+	/usr/bin/rsync -ahuv --delete --progress --stats "$SOURCE_DIR" "$DST" | tee -a $STATUS $statlog
+
+	if [ $? = "1" ]; then
+	echo "FAILURE : rsync failed." | tee -a $STATUS $statlog
+	exit 1
+	fi
+
+	/sbin/umount /Users/casperadmin/temp2
+	/bin/sleep 2
+	TODAY=$(/bin/date)
+	echo "===== Completed rsync of $i Date: $TODAY =====" | tee -a $STATUS $statlog
+else
+	echo "=== Can't connect to $i ===" | tee -a $STAUTS $statlog
+fi
+
+mail -s "DP Sync Log for $NOW.$i" <EMAIL_TO_SEND_TO> < $statlog
+
+done
+
+#umount /Volumes/temp
+
+echo "SUCCESS : rsync completed successfully" | tee -a $STATUS $statlog
+
+#rm -r /Users/casperadmin/temp2
+
+sleep 20
+
+mail -s "DP Sync Log All have finished" <EMAIL_TO_SEND_TO>
