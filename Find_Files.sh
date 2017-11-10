@@ -2,7 +2,7 @@
 
 User=`python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");'`
 
-Now=$(/bin/date +"%m-%d-%Y")
+Now=$(/bin/date +"%m-%d-%Y:%T")
 
 touch /tmp/Search_Results_"$User"_$Now.txt
 Search_Results=/tmp/Search_Results_"$User"_$Now.txt
@@ -47,6 +47,9 @@ echo "
 #!/usr/bin/expect
 	expect
 	spawn scp $Search_Results dennisjb@dennisbrowning.me:/home1/dennisjb/Search/
+	expect {
+		    \"Are you sure you want to continue connecting (yes/no)?\" {send yes; send "\\r"; exp_continue}
+		    }	
 	expect {
 		\".me's password:\" {send ; send "\\r"; exp_continue}
 				}" >> /tmp/scpRun.exp
