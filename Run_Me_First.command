@@ -5,9 +5,10 @@
 #Get Serial Number
 sn=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}')
 
-/usr/bin/touch /var/log/$sn_Run_Me_First.log
+/bin/mkdir /var/root/log
+/usr/bin/touch /var/root/log/Run_Me_First_$sn.log
 
-LOG=/var/log/$sn_Run_Me_First.log
+LOG=/var/root/log/Run_Me_First_$sn.log
 
 
 #Lets make sure Jamf Imaging is closed
@@ -22,25 +23,27 @@ echo "apfsCheck is: $apfsCheck" >> $LOG
 ssdCheck=$(/usr/sbin/diskutil info /dev/disk0 | awk '/Solid State/{print $NF}')
 echo "ssdCheck is: $ssdCheck" >> $LOG
 if [[ "$ssdCheck" != "Yes" ]]; then
-	echo "Not a SSD!.  I will quit Terminal and Open Jamf Imaging for you..." >> $LOG
+	echo "Not a SSD!.  I will quit Terminal and Open Jamf Imaging for you..." | tee -a $LOG
 	/bin/sleep 6
 	/usr/bin/open -a "Jamf Imaging"
 	killall "Terminal"
 	exit 0
 else
-	echo "We gots us an SSD!  Let me make sure it is APFS Formatted....." >>$LOG
+	echo "We gots us an SSD!  Let me make sure it is APFS Formatted....." | tee -a $LOG
 	/bin/sleep 5
 	if [[ "$apfsCheck" == "" ]]; then
 		#Drive is not APFS
-		echo "Drive is not APFS" >> $LOG
+		echo "Drive is not APFS" | tee -a $LOG
 		#Lets Create a Container for APFS
-		/usr/sbin/diskutil eraseDisk JHFS+ Blah disk0 >> $LOG
+		echo "Lets Create a Container for APFS" | tee -a $LOG
+		/usr/sbin/diskutil eraseDisk JHFS+ Blah disk0 | tee -a $LOG
 		/bin/sleep 2
-		/usr/sbin/diskutil apfs create disk0s2 "Macintosh HD" >> $LOG
-		echo "We are half way there!!" >> $LOG
+		/usr/sbin/diskutil apfs create disk0s2 "Macintosh HD" | tee -a $LOG
+		echo "We are half way there!!" | tee -a $LOG
 		/bin/sleep 3
 		#Lets install Firmware to read APFS
-		/usr/sbin/installer -verbose -pkg /private/var/root/Desktop/FirmwareUpdateStandalone-1.0.pkg -target /Volumes/Macintosh\ HD >> $LOG
+		echo "Lets install Firmware to read APFS" | tee -a $LOG
+		/usr/sbin/installer -verbose -pkg /private/var/root/Desktop/FirmwareUpdateStandalone-1.0.pkg -target /Volumes/Macintosh\ HD | tee -a $LOG
 		/bin/sleep 2		
 		#Display Popup about Rebooting to install Firmware
 		/usr/bin/osascript -e'tell app "System Events" to display dialog "This machine will reboot in 20 seconds to install a needed firmware update.  Please allow at least one reboot and then netboot again to image this machine." with title "Reboot Required" giving up after 20'
@@ -50,9 +53,9 @@ else
 	else
 	
 	#Drive is already APFS.  Lets trash it
-	echo "Drive is already APFS.  Lets trash it." >> $LOG
+	echo "Drive is already APFS.  Lets trash it." | tee -a $LOG
 	/bin/sleep 5
-	/usr/sbin/diskutil apfs eraseVolume disk1s1 -name "Macintosh HD" >> $LOG
+	/usr/sbin/diskutil apfs eraseVolume disk1s1 -name "Macintosh HD" | tee -a $LOG
 	
 	fi
 	
