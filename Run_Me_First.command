@@ -1,15 +1,23 @@
 #!/bin/sh
 
-
 #Setup logging
+CurrentDate=$(date +"%Y-%m-%d")
+/bin/sleep 1
 #Get Serial Number
 sn=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}')
 
-/bin/mkdir /var/root/log
-/usr/bin/touch /var/root/log/Run_Me_First_$sn.log
+if [ -d /var/root/log ]; then
+echo "exist"
+else
+	echo "Creating log folder"
+	mkdir /var/root/log
+fi
 
-LOG=/var/root/log/Run_Me_First_$sn.log
+/usr/bin/touch /var/root/log/"$sn"-"$CurrentDate".log
 
+LOG=/var/root/log/"$sn"-"$CurrentDate".log
+
+find /var/root/log/* -mtime +5 -exec rm {} \;
 
 #Lets make sure Jamf Imaging is closed
 
