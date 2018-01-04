@@ -6,11 +6,8 @@ CurrentDate=$(date +"%Y-%m-%d")
 #Get Serial Number
 sn=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}')
 
-if [ -d /var/root/log ]; then
-echo "exist"
-else
-	echo "Creating log folder"
-	mkdir /var/root/log
+if [ ! -d /var/root/log ]; then
+	/bin/mkdir /var/root/log
 fi
 
 /usr/bin/touch /var/root/log/"$sn"-"$CurrentDate".log
