@@ -46,7 +46,8 @@ else
 		/usr/sbin/diskutil apfs create disk0s2 "Macintosh HD" | tee -a $LOG
 		
 		#Run check to make sure new Container has Macintosh HD Volume
-		volumeCheck=$(/usr/sbin/diskutil info /dev/disk1s1 | awk '/Volume Name/{print $3" "$4}')
+		newDisk=$(/usr/sbin/diskutil list | awk '/APFS Container Scheme/{print $NF}')
+		volumeCheck=$(/usr/sbin/diskutil info /dev/"$newDisk"s1 | awk '/Volume Name/{print $3" "$4}')
 		echo "VolumeCheck is: $volumeCheck" >> $LOG
 		if [[ "$volumeCheck" != "Macintosh HD" ]]; then
 			/usr/sbin/diskutil eraseDisk JHFS+ Blah disk0 | tee -a $LOG
@@ -55,7 +56,8 @@ else
 		fi
 		
 		#Run another check to make sure new Container has Macintosh HD Volume
-		volumeCheck=$(/usr/sbin/diskutil info /dev/disk1s1 | awk '/Volume Name/{print $3" "$4}')
+		newDisk=$(/usr/sbin/diskutil list | awk '/APFS Container Scheme/{print $NF}')
+		volumeCheck=$(/usr/sbin/diskutil info /dev/"$newDisk"s1 | awk '/Volume Name/{print $3" "$4}')
 		echo "VolumeCheck is: $volumeCheck" >> $LOG
 		if [[ "$volumeCheck" != "Macintosh HD" ]]; then
 			echo "Failed format.  Display message to reach out to Dennis" >> $LOG
@@ -84,8 +86,9 @@ else
 	else
 		#Drive is already APFS.  Lets trash it
 		echo "Drive is already APFS.  Lets trash it." | tee -a $LOG
+		newDisk=$(/usr/sbin/diskutil list | awk '/APFS Container Scheme/{print $NF}')
 		/bin/sleep 5
-		/usr/sbin/diskutil apfs eraseVolume disk1s1 -name "Macintosh HD" | tee -a $LOG
+		/usr/sbin/diskutil apfs eraseVolume "$newDisk"s1 -name "Macintosh HD" | tee -a $LOG
 		/usr/bin/open -a "Jamf Imaging"
 		killall "Terminal"
 		exit 0
