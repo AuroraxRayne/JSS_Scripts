@@ -1,0 +1,29 @@
+#!/bin/sh
+
+#Setting 90 Day Password Expiration in EC
+
+#set Variables
+addKey="defaults write com.apple.Enterprise-Connect passwordExpireOverride -string 90"
+deleteKey="defaults delete com.apple.Enterprise-Connect passwordExpireOverride"
+expireDays=$(defaults read com.apple.Enterprise-Connect passwordExpireOverride)
+checkKey=""
+
+
+function keyCheck {
+	checkKey=$(defaults read com.apple.Enterprise-Connect passwordExpireOverride)
+}
+
+# Run check to see if 90 Day key needs to be written
+	
+	if [[ "$expireDays" == 90 ]]; then
+		echo "Key is already set to 90 Days"
+		echo "Exiting now"
+		exit 0
+	else
+		echo "Key is NOT Set!"
+		echo "Let me set the key now"
+		$addKey
+		keyCheck
+		echo "Let check the key value: $checkKey"
+		exit 0
+	fi
