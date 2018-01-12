@@ -10,6 +10,8 @@ sn=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}')
 bootROM=$(system_profiler SPHardwareDataType | awk '/Boot ROM Version:/{print $NF}' | tail -c4)
 /usr/bin/touch /var/root/log/"$sn"-"$CurrentDate".log
 LOG=/var/root/log/"$sn"-"$CurrentDate".log
+csGroup=$(diskutil cs list | awk '/Logical Volume Group/{print $NF}')
+ipAddy=$(ifconfig | grep "inet" |grep -Fv 127.0.0.1 |grep -Fv inet6 | awk '{print $2}')
 
 #Remove any logs older than 5 days
 find /var/root/log/* -mtime +5 -exec rm {} \;
@@ -39,11 +41,25 @@ else
 		#Drive is not APFS
 		echo "Drive is not APFS" | tee -a $LOG
 		
+		#Check and delete CoreStorage if present
+		echo "Checking for CoreStorage" | tee -a $LOG
+		if [[ "$csGroup" == "" ]]; then
+			echo "There is no CoreStorage" | tee -a $LOG
+			/bin/sleep 2
+		else
+			echo "We have a CoreStorage Scheme." | tee -a $LOG
+			echo "Let me take care of that first." | tee -a $LOG
+			/usr/sbin/diskutil cs delete "$csGroup" | tee -a $LOG
+			echo "That's finished lets continue" | tee -a $LOG
+			/bin/sleep 3
+		fi
+
 		#Lets Create a Container for APFS
 		echo "Lets Create a Container for APFS" | tee -a $LOG
 		/usr/sbin/diskutil eraseDisk JHFS+ Blah disk0 | tee -a $LOG
 		/bin/sleep 2
 		/usr/sbin/diskutil apfs create disk0s2 "Macintosh HD" | tee -a $LOG
+		/bin/sleep 2
 		
 		#Run check to make sure new Container has Macintosh HD Volume
 		newDisk=$(/usr/sbin/diskutil list | awk '/APFS Container Scheme/{print $NF}')
@@ -61,7 +77,10 @@ else
 		echo "VolumeCheck is: $volumeCheck" >> $LOG
 		if [[ "$volumeCheck" != "Macintosh HD" ]]; then
 			echo "Failed format.  Display message to reach out to Dennis" >> $LOG
-			/usr/bin/osascript -e'tell app "System Events" to display dialog "There seems to be an issue with creating the APFS Volume.  Please reach out to Dennis with the IP address so that he can take look." with title "Failed Format"'
+			/usr/bin/osascript -e'tell app "System Events" to display dialog "There seems to be an issue with creating the APFS Volume.  Try running the command file again.  If problem persist, please reach out to Dennis with the IP address below so that he can take look.
+
+
+$ipAddy" with title "Failed Format"'
 			exit 1
 		fi
 		
