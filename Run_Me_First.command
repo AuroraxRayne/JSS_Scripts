@@ -6,6 +6,7 @@ if [ ! -d /var/root/log ]; then
 fi
 
 CurrentDate=$(date +"%Y-%m-%d")
+startTime=$(date +"%Y-%m-%d %T")
 sn=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}')
 bootROM=$(system_profiler SPHardwareDataType | awk '/Boot ROM Version:/{print $NF}' | tail -c4)
 /usr/bin/touch /var/root/log/"$sn"-"$CurrentDate".log
@@ -16,12 +17,14 @@ ipAddy=$(ifconfig | grep "inet" |grep -Fv 127.0.0.1 |grep -Fv inet6 | awk '{prin
 #Remove any logs older than 5 days
 find /var/root/log/* -mtime +5 -exec rm {} \;
 
+
+echo "############Starting Log for imaging $startTime###############" | tee -a $LOG
 #Lets make sure Jamf Imaging is closed
 killall "Jamf Imaging"
 /bin/sleep 1.5
 
 #Check to see if computer to be imaged is already APFS formatted
-apfsCheck=$(/usr/sbin/diskutil list | grep "Apple_APFS")
+apfsCheck=$(/usr/sbin/diskutil list | grep "Apple_APFS" | awk '{print $2}')
 echo "apfsCheck is: $apfsCheck" >> $LOG
 ssdCheck=$(/usr/sbin/diskutil info /dev/disk0 | awk '/Solid State/{print $NF}')
 echo "ssdCheck is: $ssdCheck" >> $LOG
