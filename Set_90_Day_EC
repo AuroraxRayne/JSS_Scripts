@@ -3,14 +3,14 @@
 #Setting 90 Day Password Expiration in EC
 
 #set Variables
-addKey="defaults write com.apple.Enterprise-Connect passwordExpireOverride -string 90"
-deleteKey="defaults delete com.apple.Enterprise-Connect passwordExpireOverride"
-expireDays=$(defaults read com.apple.Enterprise-Connect passwordExpireOverride)
+loggedInUser=`python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");'`
+expireDays=$(defaults read /Users/$loggedInUser/Library/Preferences/com.apple.Enterprise-Connect passwordExpireOverride)
 checkKey=""
 
 
+
 function keyCheck {
-	checkKey=$(defaults read com.apple.Enterprise-Connect passwordExpireOverride)
+	checkKey=$(defaults read /Users/$loggedInUser/Library/Preferences/com.apple.Enterprise-Connect passwordExpireOverride)
 }
 
 # Run check to see if 90 Day key needs to be written
@@ -20,10 +20,21 @@ function keyCheck {
 		echo "Exiting now"
 		exit 0
 	else
+	    echo "Lets Kill EC"
+	    killall "Enterprise Connect"
+	    sleep 3
 		echo "Key is NOT Set!"
 		echo "Let me set the key now"
-		$addKey
+		echo "$loggedInUser"
+		sudo defaults write /Users/$loggedInUser/Library/Preferences/com.apple.Enterprise-Connect passwordExpireOverride -string 90
+		sleep 3
 		keyCheck
 		echo "Let check the key value: $checkKey"
+		sleep 5
+		open -a "Enterprise Connect"
+		echo "Done" >> /var/log/jamf.log
 		exit 0
 	fi
+	
+	
+	
