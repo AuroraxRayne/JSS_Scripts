@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #model=`/usr/bin/osascript <<EOT
 #tell application "System Events"
@@ -8,9 +8,10 @@
 #EOT`
 model=""
 
-modelName=$(system_profiler SPHardwareDataType | awk '/Model Name/{print $NF}')
-
-if [[ "$modelName" =~ "Book" ]]; then
+modelName=$(system_profiler SPHardwareDataType | awk '/Model Name/{print $3}')
+echo "$modelName"
+if [[ "$modelName" =~ Book ]];
+then
 	echo "Looks to be a laptop"
 	model="l"
 else
