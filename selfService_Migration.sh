@@ -58,8 +58,6 @@ if [[ ${domain2} =~ '$newDomain' ]]; then
 	#change ownership of home dir to new UUID
 	chown -R $un /Users/$un
 	sleep 2
-	/System/Library/CoreServices/ManagedClient.app/Contents/Resources/createmobileaccount -n $un
-	sleep 5
 prompt1=`/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -icon /System/Library/CoreServices/Installer.app/Contents/Resources/Installer.icns -heading "Migration Complete" -description "The Migration has completed successfully.  Please click OK and reboot your computer." -button1 "OK"`
     echo "Results of $prompt1";
 	    if [ "$prompt1" == "0" ]; then
