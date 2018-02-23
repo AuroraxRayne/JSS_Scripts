@@ -23,7 +23,7 @@ if [[ ${domain} == "" ]]; then
 	echo "This computer is not currently joined to a domain.  Please run Migrate to Man.co NON-DOMAIN JOINED found in Self Service."
 	for user in ${Users[@]}; do
 		echo "$user"
-		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]]; then
+		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]] || [[ $user == "xtime" ]] || [[ $user == "vauto" ]]; then
 		    echo "Local User.  Doing Nothing"
 		else
 		   	#delete mobile account
@@ -41,17 +41,17 @@ runMigration ()
 
 echo "Unjoining $olddomain"
 
-dsconfigad -remove -u $un -p $pass
+dsconfigad -remove -force -u $un -p $pass
 
 sleep 5
 
 #Chcek to see if disjoin worked.  If not, a forced disjoin will be done and then joined to new Domain.  If the disjoin worked at first it will just join to the new domain.
-domain1=$(dsconfigad -show | awk '/Active Directory Domain/ {print $4}')
+domain1=$(dsconfigad -show | awk '/Active Directory Domain/ {print $NF}')
 echo "you are on domain: $domain1"
 
 sleep 5
 
-if [[ ${domain1} =~ '$olddomain' ]]; then
+if [[ ${domain1} == $olddomain ]]; then
 	echo "Still on $olddomain"
 	dsconfigad -force -remove -u $un -p $pass
 	sleep 10
@@ -65,7 +65,7 @@ fi
 sleep 3
 #Make sure we are on the new domain
 echo "first check after bind"
-domain2=$(dsconfigad -show | grep 'Active Directory Domain')
+domain2=$(dsconfigad -show | awk '/Active Directory Domain/{print $NF}')
 
 #Line for recording in Policy Log
 echo "results of first check is: $domain2"
@@ -74,7 +74,7 @@ sleep 3
 #Run through array to delete mobile account and fix permissions as long as the username is not admin, administrator, fixme or Shared
 	for user in ${Users[@]}; do
 		echo "$user"
-		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]]; then
+		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]] || [[ $user == "xtime" ]] || [[ $user == "vauto" ]]; then
 		    echo "Local User.  Doing Nothing"
 		else
 		   	#delete mobile account
@@ -92,13 +92,13 @@ sleep 3
 	done
 
 # If on the new Domain, reset permissions on home directory to new UUID for first Login
-if [[ ${domain2} =~ $newdomain ]]; then
+if [[ ${domain2} == $newdomain ]]; then
 	echo "Sweet you are on $newdomain You are all set"
 	
 	#Run through array to delete mobile account and fix permissions as long as the username is not admin, administrator, fixme or Shared
 	for user in ${Users[@]}; do
 		echo "$user"
-		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]]; then
+		if [[ $user =~ "admin" ]] || [[ $user == "fixme" ]] || [[ $user =~ "ATuser" ]] || [[ $user =~ "ATGuser" ]] || [[ $user == "Shared" ]] || [[ $user == ".localized" ]] || [[ $user == "Guest" ]] || [[ $user == "Library" ]] || [[ $user =~ "osxadmin" ]] || [[ $user =~ "CASAdmin" ]] || [[ $user =~ "CAGAdmin" ]] || [[ $user =~ "CASuser" ]] || [[ $user =~ "CAGuser" ]] || [[ $user == "xtime" ]] || [[ $user == "vauto" ]]; then
 		    echo "Local User.  Doing Nothing"
 		else
 		  	#Fix Permissions
