@@ -42,6 +42,7 @@ if [[ "$6" != "" ]]; then
 passphrase="$6"
 fi
 
+admin_Account=$(dscl . -read /Users/macadmin | awk '/RealName:/{print $NF}')
 ###############################################################################
 ######################### DO NOT EDIT BELOW THIS LINE #########################
 ###############################################################################
@@ -185,7 +186,7 @@ sleep 2
 	expect \"Enter the password for user '{${CURRENT_USER}}':\"
     send "{${FV_PASS}}"
     send \r
-	expect \"Enter the password for user 'macadmin':\"
+	expect \"Enter the password for the added user 'macadmin':\"
     send "{${macadmin_PASS}}"
     send \r
     log_user 1
@@ -196,7 +197,7 @@ sleep 2
 echo "checking fdesetup list for macadmin"
 test_FV_USERS="$(fdesetup list)"
 sleep 2
-if ! egrep -q "^macadmin," <<< "$test_FV_USERS"; then
+if ! egrep -q "^${admin_Account}," <<< "$test_FV_USERS"; then
     echo "[ERROR] macadmin is not on the list of FileVault enabled users:"
     echo "Failed Users are: $test_FV_USERS"
 	echo "Displaying failure message..."
@@ -206,7 +207,8 @@ else
 	echo "Enabled Users are: $test_FV_USERS"
 	echo "Lets Continue"
     sleep 2
-    fdesetup remove -user {${CURRENT_USER}}
+	echo "Removing $CURRENT_USER from fdesetup list"
+    fdesetup remove -user $CURRENT_USER
 fi
 
 sleep 2
@@ -224,11 +226,8 @@ else
 	echo "Enabled Users are: $FV_USERS2"
 	echo "Lets Continue"
     sleep 2
-    fdesetup remove -user {${CURRENT_USER}}
-fi
-
-sleep 2
-
+	echo "Adding $CURRENT_USER back to the fdesetup list"
+    sleep 2
 	expect -c "
 	log_user 0
 	spawn fdesetup add -usertoadd {${CURRENT_USER}}
@@ -238,12 +237,13 @@ sleep 2
 	expect \"Enter the password for user 'macadmin':\"
 	send "{${macadmin_PASS}}"
 	send \r
-	expect \"Enter the password for user '{${CURRENT_USER}}':\"
+	expect \"Enter the password for the added user '{${CURRENT_USER}}':\"
 	send "{${USER_PASS}}"
 	send \r
 	log_user 1
 	expect eof
 	"
+fi
 sleep 2
 	
 
