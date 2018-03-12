@@ -41,8 +41,10 @@ fi
 if [[ "$6" != "" ]]; then
 passphrase="$6"
 fi
-
-admin_Account=$(dscl . -read /Users/macadmin | awk '/RealName:/{print $NF}')
+if [[ "$7" != "" ]]; then
+mgmtAccount="$7"
+fi
+admin_Account=$(dscl . -read /Users/$mgmtAccount | awk '/RealName:/{print $NF}')
 ###############################################################################
 ######################### DO NOT EDIT BELOW THIS LINE #########################
 ###############################################################################
@@ -165,7 +167,7 @@ function DecryptString() {
     # Usage: ~$ DecryptString "Encrypted String" "Salt" "Passphrase"
     echo "${1}" | /usr/bin/openssl enc -aes256 -d -a -A -S "${2}" -k "${3}"
 }
-macadmin_PASS=$(DecryptString $string $salt $passphrase)
+mgmtAccount_PASS=$(DecryptString $string $salt $passphrase)
 # If needed, unload FDERecoveryAgent and remember to reload later.
 FDERA=false
 if launchctl list | grep -q "com.apple.security.FDERecoveryAgent"; then
@@ -179,26 +181,26 @@ sleep 2
 
     expect -c "
     log_user 0
-    spawn fdesetup add -usertoadd macadmin
+    spawn fdesetup add -usertoadd $mgmtAccount
     expect \"Enter the user name:\"
 	send "{${CURRENT_USER}}"
 	send \r
 	expect \"Enter the password for user '{${CURRENT_USER}}':\"
     send "{${FV_PASS}}"
     send \r
-	expect \"Enter the password for the added user 'macadmin':\"
-    send "{${macadmin_PASS}}"
+	expect \"Enter the password for the added user '{${mgmtAccount}}':\"
+    send "{${mgmtAccount_PASS}}"
     send \r
     log_user 1
     expect eof
     "
 sleep 2
 
-echo "checking fdesetup list for macadmin"
+echo "checking fdesetup list for mgmtAccount"
 test_FV_USERS="$(fdesetup list)"
 sleep 2
 if ! egrep -q "^${admin_Account}," <<< "$test_FV_USERS"; then
-    echo "[ERROR] macadmin is not on the list of FileVault enabled users:"
+    echo "[ERROR] $mgmtAccount is not on the list of FileVault enabled users:"
     echo "Failed Users are: $test_FV_USERS"
 	echo "Displaying failure message..."
     launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$FAIL_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
@@ -232,10 +234,10 @@ else
 	log_user 0
 	spawn fdesetup add -usertoadd {${CURRENT_USER}}
 	expect \"Enter the user name:\"
-	send "macadmin"
+	send "{${mgmtAccount}}"
 	send \r
-	expect \"Enter the password for user 'macadmin':\"
-	send "{${macadmin_PASS}}"
+	expect \"Enter the password for user '{${mgmtAccount}}':\"
+	send "{${mgmtAccount_PASS}}"
 	send \r
 	expect \"Enter the password for the added user '{${CURRENT_USER}}':\"
 	send "{${USER_PASS}}"
@@ -261,7 +263,7 @@ else
 	echo "Enabled Users are: $FV_USERS2"
 	echo "Displaying success message..."
     launchctl "$L_METHOD" "$L_ID" "$jamfHelper" -windowType "utility" -icon "$LOGO_PNG" -title "$PROMPT_TITLE" -description "$SUCCESS_MESSAGE" -button1 'OK' -defaultButton 1 -timeout 30 -startlaunchd &>/dev/null &
-    fdesetup remove -user macadmin
+    fdesetup remove -user $mgmtAccount
 fi
 
 # Reload FDERecoveryAgent, if it was unloaded earlier.
