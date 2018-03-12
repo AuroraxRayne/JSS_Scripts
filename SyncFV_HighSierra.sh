@@ -196,7 +196,7 @@ sleep 2
     "
 sleep 2
 
-echo "checking fdesetup list for mgmtAccount"
+echo "checking fdesetup list for $mgmtAccount"
 test_FV_USERS="$(fdesetup list)"
 sleep 2
 if ! egrep -q "^${admin_Account}," <<< "$test_FV_USERS"; then
