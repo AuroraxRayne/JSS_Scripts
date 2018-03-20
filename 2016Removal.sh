@@ -72,7 +72,7 @@ function LogDevice {
 function ShowUsage {
 	LogMessage "In function 'ShowUsage'"
 	ConsoleMessage "Usage: $SCRIPT_NAME [--Force] [--Help] [--KeepLync] [--SaveLicense]"
-	ConsoleMessage "Use --Force to bypass warnings and forcibly remove Office 2011 applications and data"
+	ConsoleMessage "Use --Force to bypass warnings and forcibly remove Office 2016 applications and data"
 	ConsoleMessage ""
 }
 
@@ -395,7 +395,6 @@ function MainLoop {
 		Close2016
 	fi
 	# Remove Office 2016 apps
-	RemoveComponent "$PATH_OFFICE2011" "Office 2011 Applications"
 	RemoveComponent "$PATH_WORD2016" "Word 2016"
 	RemoveComponent "$PATH_EXCEL2016" "Excel 2016"
 	RemoveComponent "$PATH_PPT2016" "PowerPoint 2016"
@@ -407,10 +406,10 @@ function MainLoop {
 	RemoveComponent "/Library/LaunchDaemons/com.microsoft.office.autoupdate.helper.plist" "Launch Daemon: AutoUpdate Helper"
 	RemoveComponent "/Library/PrivilegedHelperTools/com.microsoft.office.licensingV2.helper" "Helper Tools: Licensing Helper"
 	RemoveComponent "/Library/PrivilegedHelperTools/com.microsoft.office.autoupdate.helper" "Helper Tools: AutoUpdate Helper"
-	# Remove Office 2011 application support
+	# Remove Office 2016 application support
 	RemoveComponent "/Library/Application Support/Microsoft/MERP2.0" "Error Reporting"
 	RemoveUserComponent "Library/Application Support/Microsoft/Office" "Application Support"
-	# Remove Office 2011 caches
+	# Remove Office 2016 caches
 	RemoveUserComponent "Library/Caches/com.microsoft.browserfont.cache" "Browser Font Cache"
 	RemoveUserComponent "Library/Caches/com.microsoft.office.setupassistant" "Setup Assistant Cache"
 	RemoveUserComponent "Library/Caches/Microsoft/Office" "Office Cache"
@@ -450,11 +449,6 @@ else
     	--Force|-f|--force)
     	LogMessage "Force mode set to TRUE"
     	FORCE_PERM=true
-    	shift # past argument
-    	;;
-    	--KeepLync|-k|--keeplync)
-    	LogMessage "Keep Lync set to TRUE"
-    	KEEP_LYNC=true
     	shift # past argument
     	;;
     	--SaveLicense|-s|--savelicense)
