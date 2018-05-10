@@ -1,9 +1,9 @@
 #!/bin/sh
 
-nameCode=`/usr/bin/osascript <<EOT
-set locations to {"Main Campus Atlanta", "Summit Campus Atlanta", "Burlington", "North Hills", "Dallas", "Austin", "Groton", "Mississauga", "South Jordan", "HomeNet", "Vin Solutions", "NextGear Capital", "Ready Logistics", "KBB Irvine", "xTime", "Other"}
+nameCode=`/bin/launchctl asuser 0 /usr/bin/osascript <<EOT
+set office to {"Main Campus Atlanta", "Summit Campus Atlanta", "Burlington", "North Hills", "Dallas", "Austin", "Groton", "Mississauga", "South Jordan", "HomeNet", "Vin Solutions", "NextGear Capital", "Ready Logistics", "KBB Irvine", "xTime", "Other"}
 
-set choice to (choose from list locations with prompt "Please select the Office that best describes your location")
+set choice to (choose from list office with prompt "Please select the Office that best describes your location")
 set city to the result
 set code to city as text
 
