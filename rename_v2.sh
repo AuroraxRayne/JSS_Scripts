@@ -1,7 +1,6 @@
 #!/bin/sh
 
 nameCode=`/usr/bin/osascript <<EOT
-
 set locations to {"Main Campus Atlanta", "Summit Campus Atlanta", "Burlington", "North Hills", "Dallas", "Austin", "Groton", "Mississauga", "South Jordan", "HomeNet", "Vin Solutions", "NextGear Capital", "Ready Logistics", "KBB Irvine", "xTime", "Other"}
 
 set choice to (choose from list locations with prompt "Please select the Office that best describes your location")
@@ -41,13 +40,12 @@ else if (code = "xTime") then
 else
 	set nameCode to "CAI"
 end if
-
 EOT`
 
 sn=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}' | cut -c 5-)
 model=$(system_profiler SPHardwareDataType | awk '/Model Name/ {print $3}')
 
-if [[ model == "MacBook" ]]; then
+if [[ $model == "MacBook" ]]; then
 	modelCode="L"
 else
 	modelCode="W"
@@ -55,6 +53,8 @@ fi
 os="mac"
 
 computerName=$modelCode$nameCode$os$sn
+
+echo "computerName has been set to: $computerName"
 
 networksetup -setcomputername $computerName
 scutil --set LocalHostName $computerName
