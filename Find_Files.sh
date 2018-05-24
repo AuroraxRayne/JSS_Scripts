@@ -44,7 +44,6 @@ IFS=$OLD_IFS
 sleep 2
 touch /tmp/scpRun.exp
 echo "
-#!/usr/bin/expect
 	expect
 	spawn scp $Search_Results dennisjb@dennisbrowning.me:/home1/dennisjb/Search/
 	expect {
