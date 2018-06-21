@@ -18,6 +18,19 @@ verifyUsernamePasswordPrompt="Please verify the password for the Team Member :"
 #Prompt for Current users password
 adminPassword=$(/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "text returned of (display dialog \"$adminPasswordPrompt\" default answer \"\" buttons {\"Ok\"} default button 1 with title\"Password\" with hidden answer)") >/dev/null 2>&1
 
+#Validate Current Users password
+TRY=1
+until dscl /Search -authonly "$loggedInUser" "$adminPassword" &>/dev/null; do
+    (( TRY++ ))
+    adminPassword=$(/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "text returned of (display dialog \"Invalid Password for $loggedInUser.  Please Try again\" default answer \"\" buttons {\"Ok\"} default button 1 with title\"Password\" with hidden answer)")
+    if (( TRY >= 3 )); then
+        echo "[ERROR] Password prompt unsuccessful after 3 attempts."
+        /usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "display dialog \"Passwords do not match!  Quiting out of this process.\" buttons {\"Ok\"} default button 1 with title\"Error\""
+        exit 1
+    fi
+done
+
+
 #Prompt for New User's username
 newUsername=$(/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "text returned of (display dialog \"$newUsernamePrompt\" default answer \"\" buttons {\"Ok\"} default button 1 with title\"Username\")") >/dev/null 2>&1
 
@@ -63,4 +76,3 @@ else
 	/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "display dialog \"Passwords do not match!  Quiting out of this process.\" buttons {\"Ok\"} default button 1 with title\"Error\""
 	exit 1
 fi
-
