@@ -35,7 +35,7 @@ if [[ $newUserPassword == $verifyUserPassword ]]; then
 	echo "Passwords match.  Let me create an account for you!"
 	/usr/sbin/sysadminctl -adminUser $loggedInUser -adminPassword $adminPassword -addUser $newUsername -fullName "$newUserFullName" -password $newUserPassword -admin
 	echo "New User Created"
-	/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "display dialog \"New User Created! 
+	/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "display dialog \"
 	Username: $newUsername
 	Full Name: $newUserFullName
 	Password: $newUserPassword\" buttons {\"Ok\"} default button 1 with title\"New User Created\""
@@ -53,7 +53,7 @@ if [ $newUserPassword2 == $verifyUserPassword2 ]; then
 	echo "Passwords match.  Let me create an account for you!"
 	/usr/sbin/sysadminctl -adminUser $loggedInUser -adminPassword $adminPassword -addUser $newUsername -fullName "$newUserFullName" -password $newUserPassword -admin
 	echo "New User Created"
-	/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "display dialog \"New User Created! 
+	/usr/bin/sudo -u "$loggedInUser" /usr/bin/osascript -e "display dialog \"
 	Username: $newUsername
 	Full Name: $newUserFullName
 	Password: $newUserPassword\" buttons {\"Ok\"} default button 1 with title\"New User Created\""
