@@ -54,14 +54,14 @@ os="mac"
 
 if [[ "$nameCode" == "VAT" ]]; then
 	echo "Prompting for Computer Name"
-	computerName="$(/usr/bin/osascript -e 'display dialog "Please enter Computer Name:" default answer "VAA-USERNAME-LT1" with title "Computer Name" giving up after 86400 with text buttons {"OK"} default button 1 ' -e 'return text returned of result')"
+	computerName="$(/bin/launchctl asuser 0 /usr/bin/osascript -e 'display dialog "Please enter Computer Name:" default answer "VAA-USERNAME-LT1" with title "Computer Name" giving up after 86400 with text buttons {"OK"} default button 1 ' -e 'return text returned of result')"
 else
 	echo "Use standard naming convention"
 	computerName=$modelCode$nameCode$os$sn
 fi
 	echo "computerName has been set to: $computerName"
 
-#networksetup -setcomputername $computerName
-#scutil --set LocalHostName $computerName
-#scutil --set HostName $computerName
-#sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName $computerName
+networksetup -setcomputername $computerName
+scutil --set LocalHostName $computerName
+scutil --set HostName $computerName
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName $computerName
