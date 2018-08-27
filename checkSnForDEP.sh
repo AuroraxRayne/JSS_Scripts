@@ -12,7 +12,7 @@ PromptForSerialNumber () {
 tell application "System Events"
     activate
     with timeout of 600 seconds
-        set sn to text returned of (display dialog "lease enter Serial Number you would like to check:" default answer "")
+        set sn to text returned of (display dialog "Please enter Serial Number you would like to check:" default answer "")
     end timeout
 end tell
 EOT)
@@ -34,11 +34,11 @@ snList=$(echo $list | sed 's/<serial_number>//g' | sed 's/<\/serial_number>/\'$'
 
 if echo $snList | grep -q -w "$sn"; then
 	echo "Mac is DEP Enabled"
-	/usr/bin/osascript -e 'tell app "System Events" to display dialog "This mac is enabled for autoMac Deployment.  Please boot to the recovery partition and wipe/reinstall the OS." with title "autoMac Enabled"'
+	/usr/bin/osascript -e 'tell app "System Events" to display dialog "This mac is enabled for autoMac Deployment. :-)"'
 	exit 0
 else
 	echo "Mac is not DEP Enabled"
-	/usr/bin/osascript -e 'tell app "System Events" to display dialog "This mac is NOT enabled for autoMac Deployment." with title "NOT autoMac Enabled"'
+	/usr/bin/osascript -e 'tell app "System Events" to display dialog "This mac is NOT enabled for autoMac Deployment. :-("'
 	exit 0
 fi
 }
