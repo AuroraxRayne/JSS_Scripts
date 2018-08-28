@@ -41,6 +41,7 @@ else
 	/usr/bin/osascript -e 'tell app "System Events" to display dialog "This mac is NOT enabled for autoMac Deployment. :-("'
 	exit 0
 fi
+exit 0
 }
 
 #Running the Main Process
@@ -55,8 +56,14 @@ HELPER=`/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jam
             echo "Run SN Find"
 			GetSerialNumber
 			CheckSerialForDEP
+            sleep 2
+            exit 0
         else
             echo "Pass Popup Window"
 			PromptForSerialNumber
 			CheckSerialForDEP
+            sleep 2
+            exit 0
         fi
+exit 0
+        
