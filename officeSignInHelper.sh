@@ -237,11 +237,11 @@ function DetectEnterpriseConnect {
 
 # Get the UPN from Enterprise Connect
 function GetUPNfromEnterpriseConnect {
-	local ECUPN=$(${CMD_PREFIX} "/Applications/Enterprise Connect.app/Contents/SharedSupport/eccl" -a userPrincipalName | awk '/userPrincipalName:/{print $NF}' 2> /dev/null)
-	if [ "$ECUPN" == "" ]; then
-		echo "0"
-	else
+	local ECUPN=$(${CMD_PREFIX} defaults read "/Library/Application Support/CAI"/com.apple.Enterprise-Connect.attributes adUsername 2> /dev/null)
+	if [[ "$ECUPN" =~ "@coxautoinc.com" ]] ; then
 		echo "$ECUPN"
+	else
+		echo "0"
 	fi
 }
 
@@ -350,6 +350,7 @@ if [ "$UPN" == "0" ] && [ "$EC" == "1" ]; then
 		exit 0
 	else
 		echo ">>WARNING - Could not retrieve UPN from Enterprise Connect"
+		${CMD_PREFIX} /usr/bin/osascript -e 'display dialog "This process requires that Enterprise Connect (EC) is signed in and running.  EC is not currently signed in using your CAI email address.  Please open EC and sign in with your CAI email address and try running this process again."'
 	fi
 fi
 
