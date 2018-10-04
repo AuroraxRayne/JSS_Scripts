@@ -67,11 +67,19 @@ sleep 2
 }
 
 #Running main 
-
 if [ -e "/Library/Application Support/CAI/DEPSetupComplete.receipt" ]; then
 	echo "Setup has already been run"
 	exit 0
 else
+	pgrep "Setup Assistant" > /dev/null
+	stillRunning=$(echo $?)
+	while [ "$stillRunning" == "0" ]
+	do
+		echo "test"
+        /bin/sleep 2
+        pgrep "Setup Assistant" > /dev/null
+		stillRunning=$(echo $?)
+	done
 	echo "Setup has not been run"
 	echo "Starting to Run DEP Setup"
 	runDEPSetup
