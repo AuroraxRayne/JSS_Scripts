@@ -37,6 +37,8 @@ else if (code = "KBB Irvine") then
 	set nameCode to "KBB"
 else if (code = "xTime") then
 	set nameCode to "RWC"
+else if (code = "Loaner") then
+	set nameCode to "Loaner"
 else
 	set nameCode to "CAI"
 end if
@@ -52,9 +54,9 @@ else
 fi
 os="mac"
 
-if [[ "$nameCode" == "VAT" ]]; then
+if [[ "$nameCode" == "VAT" ]] || [[ "$nameCode" == "Loaner" ]]; then
 	echo "Prompting for Computer Name"
-	computerName="$(/bin/launchctl asuser 0 /usr/bin/osascript -e 'display dialog "Please enter Computer Name:" default answer "VAA-USERNAME-LT1" with title "Computer Name" giving up after 86400 with text buttons {"OK"} default button 1 ' -e 'return text returned of result')"
+	computerName="$(/bin/launchctl asuser 0 /usr/bin/osascript -e 'display dialog "Please enter Computer Name:" default answer "VAA-USERNAME-LT1 or lBURmacLoaner01" with title "Computer Name" giving up after 86400 with text buttons {"OK"} default button 1 ' -e 'return text returned of result')"
 else
 	echo "Use standard naming convention"
 	computerName=$modelCode$nameCode$os$sn
