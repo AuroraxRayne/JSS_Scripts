@@ -297,7 +297,7 @@ jamfHelperCurtain () {
 # Display Full screen message to user
 /bin/echo "Put up the curtain."
 #/usr/bin/sudo -u "$currentuser"
-/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType fs -title "Convert to Local User" -heading "Account Conversion in Progress" -description "This process will take 5-10 minutes to complete.  This system will reboot when the process is complete.  Please disregard any popups about passwords.
+/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType fs -title "Convert to Local User" -heading "Account Conversion in Progress" -description "This process will take 5-10 minutes to complete.  This system will reboot when the process is complete.  Please cancel out any popups about passwords.
 Thank you for your patience." -icon /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns &
 }
 ### End jamfHelper stuff ###
@@ -364,7 +364,7 @@ if [[ "$FV2Stat" =~ "FileVault is On" ]] && [[ ! "$FV2Stat" =~ "Encryption in pr
 	#
 	/usr/bin/fdesetup add -inputplist < /tmp/fvenable.plist -verbose
 	# clean up
-	/bin/rm -f /tmp/fvenable.plist
+	#/bin/rm -f /tmp/fvenable.plist
 	#
 	# make sure it all worked.
 	FVtmpUserCheck=$(/usr/bin/fdesetup list | /usr/bin/grep "$FVtmpUser," |  /usr/bin/awk -F',' '{print $1}')
