@@ -1,41 +1,41 @@
 #!/bin/sh
 
 nameCode=`/bin/launchctl asuser 0 /usr/bin/osascript <<EOT
-set office to {"Main Campus Atlanta", "Summit Campus Atlanta", "Burlington", "North Hills", "Dallas", "vAuto Austin", "Groton", "Mississauga", "South Jordan", "HomeNet", "Vin Solutions", "NextGear Capital", "Ready Logistics", "KBB Irvine", "xTime", "Other"}
+set office to {"US-GA-Atlanta", "US-VT-Burlington", "US-NY-North Hills", "US-TX-Dallas", "US-TX-Austin", "US-CT-Groton", "CA-ON-Mississauga", "US-UT-South Jordan", "US-CA-Sacramento", "US-PA-Exton", "US-KS-Kansas City", "US-IN-Carmel", "US-AZ-Phoenix", "US-CA-Irvine", "US-CA-Redwood City", "Other", "Loaner"}
 
 set choice to (choose from list office with prompt "Please select the Office that best describes your location")
 set city to the result
 set code to city as text
 
-if (code = "Main Campus Atlanta") then
-	set nameCode to "MAN"
-else if (code = "Summit Campus Atlanta") then
+if (code = "US-GA-Atlanta") then
 	set nameCode to "ATL"
-else if (code = "Burlington") then
+else if (code = "US-VT-Burlington") then
 	set nameCode to "BUR"
-else if (code = "North Hills") then
+else if (code = "US-NY-North Hills") then
 	set nameCode to "NHP"
-else if (code = "Dallas") then
+else if (code = "US-TX-Dallas") then
 	set nameCode to "DAL"
-else if (code = "vAuto Austin") then
-	set nameCode to "VAT"
-else if (code = "Groton") then
+else if (code = "US-TX-Austin") then
+	set nameCode to "VAA"
+else if (code = "US-CT-Groton") then
 	set nameCode to "GRO"
-else if (code = "Mississauga") then
+else if (code = "CA-ON-Mississauga") then
 	set nameCode to "MIS"
-else if (code = "South Jordan") then
+else if (code = "US-UT-South Jordan") then
 	set nameCode to "SLC"
-else if (code = "HomeNet") then
+else if (code = "US-CA-Sacramento") then
+	set nameCode to "SAC"
+else if (code = "US-PA-Exton") then
 	set nameCode to "HMN"
-else if (code = "Vin Solutions") then
+else if (code = "US-KS-Kansas City") then
 	set nameCode to "VIN"
-else if (code = "NextGear Capital") then
+else if (code = "US-IN-Carmel") then
 	set nameCode to "NGC"
-else if (code = "Ready Logistics") then
+else if (code = "US-AZ-Phoenix") then
 	set nameCode to "RDL"
-else if (code = "KBB Irvine") then
+else if (code = "US-CA-Irvine") then
 	set nameCode to "KBB"
-else if (code = "xTime") then
+else if (code = "US-CA-Redwood City") then
 	set nameCode to "RWC"
 else if (code = "Loaner") then
 	set nameCode to "Loaner"
@@ -54,7 +54,7 @@ else
 fi
 os="mac"
 
-if [[ "$nameCode" == "VAT" ]] || [[ "$nameCode" == "Loaner" ]]; then
+if [[ "$nameCode" == "VAA" ]] || [[ "$nameCode" == "Loaner" ]]; then
 	echo "Prompting for Computer Name"
 	computerName="$(/bin/launchctl asuser 0 /usr/bin/osascript -e 'display dialog "Please enter Computer Name:" default answer "VAA-USERNAME-LT1 or lBURmacLoaner01" with title "Computer Name" giving up after 86400 with text buttons {"OK"} default button 1 ' -e 'return text returned of result')"
 else
