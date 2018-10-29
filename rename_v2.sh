@@ -3,7 +3,7 @@
 nameCode=`/bin/launchctl asuser 0 /usr/bin/osascript <<EOT
 set office to {"CA-ON-Mississauga", "US-AZ-Phoenix", "US-CA-Irvine", "US-CA-Redwood City","US-CA-Sacramento", "US-CT-Groton", "US-GA-Atlanta", "US-IN-Carmel", "US-KS-Kansas City", "US-NY-North Hills", "US-PA-Exton", "US-TX-Austin", "US-TX-Dallas", "US-UT-South Jordan", "US-VT-Burlington", "Loaner", "Other"}
 
-set choice to (choose from list office with prompt "Please select the Office that best describes your location")
+set choice to (choose from list office with prompt "Please select the City that best describes your location")
 set city to the result
 set code to city as text
 
