@@ -1,101 +1,86 @@
-#!/bin/bash
-#Script to zip the Users home directory path on a Mac and MD5 hash the file.
-#This script is designed to run locally or remotely via system like jamfPro.
-# Rev 3.0B 12/4/2018 Dennis Browning
+#!/bin/sh
 
+LoggedInUser=`python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");'`
 
-#Grab the currently logged in user to scan their home dir
-User=`python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");'`
+oldDomain=""
+newDomain=""
+newDomainTrigger=""
 
-outputFolder=""
+runMigration ()
+{
 
-echo "Calculating Folder size...."
-userHomeDirSize=$(du -sh /Users/$User | awk '{print $1}')
-freeSpace=$(df -h | sed -n 2p | awk '{print $4}')
+echo "Unjoining Old Domain"
 
-echo "Your Home Directory is: $userHomeDirSize"
-echo "You have $freeSpace on your local drive"
+dsconfigad -remove -force -u user -p pass
 
-#Determine output location
-echo "
+sleep 3
 
-Please enter the appropriate Output Locaiton:
-Enter 1 for local storage of collection 
-Enter 2 for storage device provided by CEI Security
-"
-read outputLocation
+#prompt for User's username for changing permissions later in the script
+un=`/usr/bin/osascript <<EOT
+tell application "System Events"
+    activate
+    with timeout of 600 seconds
+        set un to text returned of (display dialog "Please type in Active Directory Username" default answer "" with icon 2)
+    end timeout
+end tell
+EOT`
 
-if [ $outputLocation == 1 ]; then
-	echo "Local Storage has been Selected"
-	#Make a folder on root of drive to hold collection files.
-	#Change permissions on new folder to allow anyone to write to it
-	mkdir /eDiscoverySelfCollection_$User
-	chmod a+w /eDiscoverySelfCollection_$User
-	outputFolder="/eDiscoverySelfCollection_$User"
-	echo "The output folder is $outputFolder"
+#Chcek to see if disjoin worked.  If not, a forced disjoin will be done and then joined to new Domain.  If the disjoin worked at first it will just join to the new domain.
+domain1=$(dsconfigad -show | grep 'Active Directory Domain')
+
+if [[ ${domain1} =~ '$oldDomain' ]]; then
+	echo "Still on $oldDomain"
+	dsconfigad -force -remove -u user -p pass
+	sleep 10
+	/usr/local/jamf/bin/jamf policy -trigger $newDomainTrigger
 else
-	if [ $outputLocation == 2 ]; then
-		echo "Storage provided by CEI"
-		#Make a folder on root of drive to hold collection files.
-		#Change permissions on new folder to allow anyone to write to it		
-		mkdir /Volumes/Secure_Backup/eDiscoverySelfCollection_$User
-		chmod a+w /Volumes/Secure_Backup/eDiscoverySelfCollection_$User
-		outputFolder="/Volumes/Secure_Backup/eDiscoverySelfCollection_$User"
-		echo "The output folder is $outputFolder"
-	else
-	echo "Incorrect input.  Exiting script."
-	exit 1
-	fi
+	echo "Looks like unjoin worked.  Lets join the $newDomain Domain"
+	/usr/local/jamf/bin/jamf policy -trigger $newDomainTrigger
+	sleep 5
 fi
 
-#Set variable for zipFile name
-zipFile=$outputFolder/$User.zip
+sleep 3
+#Make sure we are on the new domain
+echo "first check after bind"
+domain2=$(dsconfigad -show | grep 'Active Directory Domain')
 
-#Define Home Directory
-homeDir=/Users/$User
+#Line for recording in Policy Log
+echo "results of first check $domain2"
 
-#Lets determine the scope of collection
-# Full Home Directory excluding Library will collect the Entire Home directory excluding the Library folder. This will not collect emails in Outlook.
-# Full Home Directory excluding Library will collect the Entire Home directory excluding No folders.
-#Prompt User to select Scope
-echo "Please choose the appropriate Collect Scope as instructed by Cox Enterprise Security:
-1: Full Home Directory Collection excluding Library
-2: Full Home Directory Collection with Library
-"
-read collectionScope
+sleep 3
+# If on the new Domain, reset permissions on home directory to new UUID for first Login
+if [[ ${domain2} =~ '$newDomain' ]]; then
+	echo "Sweet you are on $newDomain You are all set"
+	echo "Lets clean up your old AD account"
+	#removing profile but not home dir
+	dscl . -delete /Users/$un
+	echo "Lets fix permissions on $un home directory"
+	#change ownership of home dir to new UUID
+	chown -R $un /Users/$un
+	sleep 2
+prompt1=`/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -icon /System/Library/CoreServices/Installer.app/Contents/Resources/Installer.icns -heading "Migration Complete" -description "The Migration has completed successfully.  Please click OK and reboot your computer." -button1 "OK"`
+    echo "Results of $prompt1";
+	    if [ "$prompt1" == "0" ]; then
+			exit 0
+		fi
+		
+else
+	prompt3=`/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -icon /System/Library/CoreServices/Installer.app/Contents/Resources/Installer.icns -heading "Migration Incomplete" -description "The Migration has not completed.  There was an issue with your migration, please reach out to Support for help." -button1 "OK"`
 
-#Generate a MD5 list of all files in the Users home directory
-if [ $collectionScope == 1 ]; then
-	echo "Now Calculating MD5 hash for Full Collection excluding Library"
-	find $homeDir -type f ! -path '*Music/*' ! -path '*Movies/*' ! -path '*Pictures/*' ! -path '*MobileSync/Backup/*' ! -path '*/Library/*' -exec md5 {} \; > $outputFolder/checksums.md5
-else 
-	if [ $collectionScope == 2 ]; then
-		echo "Now Calculating MD5 hash for Full Collection with Library"
-		find $homeDir -type f ! -path '*Music/*' ! -path '*Movies/*' ! -path '*Pictures/*' ! -path '*MobileSync/Backup/*' ! -path '*/Library/Containers/*' -exec md5 {} \; > $outputFolder/checksums.md5
-	else
-		echo "Incorrect input.  Exiting Script."
-		exit 1
-	fi
+	echo "Results of $prompt3";
+	    if [ "$prompt3" == "0" ]; then
+			exit 1
+		fi
+
 fi
-
-#	echo "Now Calculating MD5 hash for all files in your home directory"
-#find $homeDir -type f -exec md5 {} \; > $outputFolder/checksums.md5
+}
 
 
-if [ $collectionScope == 1 ]; then
-	echo "Now collecting files for the Zip...."
-	zip -rq -X $outputFolder/$User $homeDir -x '*Music/*' '*Movies/*' '*Pictures/*' '*/MobileSync/Backup/*' '*/Library/*'
-else 
-	if [ $collectionScope == 2 ]; then
-		echo "Now collecting files for the Zip...."
-		zip -rq -X $outputFolder/$User $homeDir -x '*Music/*' '*Movies/*' '*Pictures/*' '*/MobileSync/Backup/*' '*/Library/Containers/*'
-	fi
+if [[ ${LoggedInUser} =~ "admin" ]] || [[ ${LoggedInUser} == "fixme" ]]; then
+    echo "No normal user is logged in!  lets run the migration!"
+    runMigration
+else
+    echo "$LoggedInUser is logged in and this process will exit"
+    /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -icon /System/Library/CoreServices/Installer.app/Contents/Resources/Installer.icns -heading "FAIL" -description "You must be logged in as fixme or admin account.  Please Logout of $LoggedInUser and login as fixme or admin and run this process again." -button1 "OK"
+    exit 1
 fi
-#Create a zip file with the contents of the users home directory excluding the folders for Music, Movies, Pictures and MobileSync/Backup.
-#echo "Now creating a zip file."
-#zip -r -X $outputFolder/$User $homeDir -x '*Music/*' '*Movies/*' '*Pictures/*' '*/MobileSync/Backup/*' '*/Library/Containers/*'
-
-echo "Zip File Creation Complete"
-read -p "Press any key to continue... " -n1 -s
-killall "Terminal"
-
