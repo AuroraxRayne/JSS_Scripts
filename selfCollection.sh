@@ -94,6 +94,18 @@ else
 fi
 echo "Zip File Creation Complete"
 systemsetup -setcomputersleep 120
-read -p "Press any key to continue... " -n1 -s
-killall "Terminal"
+
+if [ $outputLocation == 1 ]; then
+	echo "Please upload the files located in the folder that has been opened."
+	open $outputFolder
+	read -p "Press any key to continue... " -n1 -s
+	killall "Terminal"
+fi
+if [ $outputLocation == 2 ]; then
+	echo "You can now remove the external drive."
+	umount /Volumes/Secure_Backup
+	read -p "Press any key to continue... " -n1 -s
+	killall "Terminal"
+fi
+
 
