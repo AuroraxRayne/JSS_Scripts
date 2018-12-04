@@ -3,7 +3,7 @@
 #This script is designed to run locally or remotely via system like jamfPro.
 # Rev 3.0B 12/4/2018 Dennis Browning
 
-
+systemsetup -setcomputersleep Never
 #Grab the currently logged in user to scan their home dir
 User=`python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");'`
 
@@ -89,6 +89,7 @@ else
 	fi
 fi
 echo "Zip File Creation Complete"
+systemsetup -setcomputersleep 120
 read -p "Press any key to continue... " -n1 -s
 killall "Terminal"
 
