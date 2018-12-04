@@ -18,7 +18,6 @@ echo "You have $freeSpace on your local drive"
 
 #Determine output location
 echo "
-
 Please enter the appropriate Output Locaiton:
 Enter 1 for local storage of collection 
 Enter 2 for storage device provided by CEI Security
@@ -32,7 +31,8 @@ if [ $outputLocation == 1 ]; then
 	mkdir /eDiscoverySelfCollection_$User
 	chmod a+w /eDiscoverySelfCollection_$User
 	outputFolder="/eDiscoverySelfCollection_$User"
-	echo "The output folder is $outputFolder"
+	echo "The output folder is $outputFolder
+	"
 else
 	if [ $outputLocation == 2 ]; then
 		echo "Storage provided by CEI"
@@ -41,7 +41,8 @@ else
 		mkdir /Volumes/Secure_Backup/eDiscoverySelfCollection_$User
 		chmod a+w /Volumes/Secure_Backup/eDiscoverySelfCollection_$User
 		outputFolder="/Volumes/Secure_Backup/eDiscoverySelfCollection_$User"
-		echo "The output folder is $outputFolder"
+		echo "The output folder is $outputFolder
+		"
 	else
 	echo "Incorrect input.  Exiting script."
 	exit 1
@@ -78,10 +79,6 @@ else
 	fi
 fi
 
-#	echo "Now Calculating MD5 hash for all files in your home directory"
-#find $homeDir -type f -exec md5 {} \; > $outputFolder/checksums.md5
-
-
 if [ $collectionScope == 1 ]; then
 	echo "Now collecting files for the Zip...."
 	zip -rq -X $outputFolder/$User $homeDir -x '*Music/*' '*Movies/*' '*Pictures/*' '*/MobileSync/Backup/*' '*/Library/*'
@@ -91,10 +88,6 @@ else
 		zip -rq -X $outputFolder/$User $homeDir -x '*Music/*' '*Movies/*' '*Pictures/*' '*/MobileSync/Backup/*' '*/Library/Containers/*'
 	fi
 fi
-#Create a zip file with the contents of the users home directory excluding the folders for Music, Movies, Pictures and MobileSync/Backup.
-#echo "Now creating a zip file."
-#zip -r -X $outputFolder/$User $homeDir -x '*Music/*' '*Movies/*' '*Pictures/*' '*/MobileSync/Backup/*' '*/Library/Containers/*'
-
 echo "Zip File Creation Complete"
 read -p "Press any key to continue... " -n1 -s
 killall "Terminal"
